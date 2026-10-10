@@ -51,16 +51,24 @@ jobs:
           host: mac
           target: desktop
           arch: clang_64
-          modules: 'qtsvg'
           install-deps: true
           cache: true
           cache-key-prefix: vtm-qt-653-macos
+
+      - name: Remove obsolete AGL link on current macOS SDKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="${QT_ROOT_DIR}/lib/cmake/Qt6/FindWrapOpenGL.cmake"
+          sed -i '' '/find_library(WrapOpenGL_AGL NAMES AGL)/,/endif()/d' "$FILE"
+          sed -i '' '/if(NOT __opengl_agl_fw_path)/,/endif()/d' "$FILE"
+          sed -i '' '/target_link_libraries(WrapOpenGL::WrapOpenGL INTERFACE ${__opengl_agl_fw_path})/d' "$FILE"
 
       - name: Configure CMake
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_TESTS=ON \
+            -DBUILD_TESTING=ON \
             -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" \
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOS_DEPLOYMENT_TARGET}"
@@ -98,14 +106,14 @@ jobs:
           test "$EXECUTABLE" = 'VTM'
           test -x "$BIN"
           test -f "$APP/Contents/Resources/app.icns"
-          lipo -verify_arch x86_64 arm64 "$BIN"
+          lipo "$BIN" -verify_arch x86_64 arm64
 
           while IFS= read -r -d '' FILE; do
             if ! file "$FILE" | grep -q 'Mach-O'; then
               continue
             fi
 
-            lipo -verify_arch x86_64 arm64 "$FILE"
+            lipo "$FILE" -verify_arch x86_64 arm64
             while read -r MINOS; do
               if ! awk -v actual="$MINOS" -v maximum="$MACOS_DEPLOYMENT_TARGET" \
                 'BEGIN { exit !((actual + 0) <= (maximum + 0)) }'; then
@@ -114,16 +122,12 @@ jobs:
               fi
             done < <(vtool -show-build "$FILE" | awk '/minos/{print $2}')
 
-            INSTALL_NAME="$(otool -D "$FILE" 2>/dev/null | tail -n +2 | head -1 || true)"
             while read -r DEPENDENCY; do
-              if [ "$DEPENDENCY" = "$INSTALL_NAME" ]; then
-                continue
-              fi
-              if [[ "$DEPENDENCY" =~ ^(/Users/|/opt/homebrew/|/usr/local/) ]]; then
+              if [[ "$DEPENDENCY" =~ ^(/Users/|/private/tmp/|/opt/homebrew/|/usr/local/) ]]; then
                 echo "Non-portable dependency $DEPENDENCY found in $FILE"
                 exit 1
               fi
-            done < <(otool -L "$FILE" | tail -n +2 | awk '{print $1}')
+            done < <(otool -L "$FILE" | awk '/^[[:space:]]/{print $1}')
 
             while read -r RPATH; do
               if [[ "$RPATH" =~ ^(/Users/|/opt/homebrew/|/usr/local/) ]]; then
@@ -159,6 +163,22 @@ jobs:
           ditto -x -k "$ZIP" "$EXTRACTED"
           codesign --verify --deep --strict --verbose=2 "$EXTRACTED/VTM.app"
           test -x "$EXTRACTED/VTM.app/Contents/MacOS/VTM"
+
+          for ARCH in arm64 x86_64; do
+            THIN_ROOT="$(mktemp -d)"
+            ditto "${{ steps.app.outputs.path }}" "$THIN_ROOT/VTM.app"
+            while IFS= read -r -d '' FILE; do
+              if ! file "$FILE" | grep -q 'Mach-O'; then
+                continue
+              fi
+              lipo "$FILE" -thin "$ARCH" -output "${FILE}.thin"
+              mv "${FILE}.thin" "$FILE"
+            done < <(find "$THIN_ROOT/VTM.app" -type f -print0)
+            codesign --force --deep --sign - "$THIN_ROOT/VTM.app"
+            codesign --verify --deep --strict --verbose=2 "$THIN_ROOT/VTM.app"
+            ditto -c -k --sequesterRsrc --keepParent "$THIN_ROOT/VTM.app" \
+              "dist/VTM-${VERSION}-macOS-11-${ARCH}.zip"
+          done
           echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
 
       - name: Upload artifact
@@ -182,7 +202,6 @@ jobs:
           host: windows
           target: desktop
           arch: win64_msvc2019_64
-          modules: 'qtsvg'
           install-deps: true
           cache: true
           cache-key-prefix: vtm-qt-653-windows
@@ -191,7 +210,7 @@ jobs:
         shell: pwsh
         run: |
           cmake -S . -B build -A x64 `
-            -DBUILD_TESTS=OFF `
+            -DBUILD_TESTING=OFF `
             -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR"
 
       - name: Build
