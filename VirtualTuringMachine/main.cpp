@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
 
     QApplication::setApplicationName("Virtual Turing Machine");
+    QApplication::setApplicationVersion(VTM_VERSION);
     QApplication::setOrganizationDomain("mai.ru");
     Q_INIT_RESOURCE(resources);
 

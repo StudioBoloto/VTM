@@ -9,7 +9,7 @@
         <key>CFBundleIconFile</key>
         <string>app.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>org.qtproject.VirtualTuringMachine</string>
+        <string>ru.mai.vtm</string>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
@@ -19,9 +19,9 @@
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleVersion</key>
-        <string>1.0</string>
-        <key>NSMainNibFile</key>
-        <string>MainMenu</string>
+        <string>1.0.4</string>
+        <key>CFBundleShortVersionString</key>
+        <string>1.0.4</string>
         <key>NSPrincipalClass</key>
         <string>NSApplication</string>
         <key>CFBundleDisplayName</key>

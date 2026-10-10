@@ -68,10 +68,12 @@ struct NodeSnapshot {
 struct TransitionSnapshot {
     int startType = 0;
     int finishType = 0;
+    QString conditions;
 
     bool operator<(const TransitionSnapshot& other) const {
         if (startType != other.startType) return startType < other.startType;
-        return finishType < other.finishType;
+        if (finishType != other.finishType) return finishType < other.finishType;
+        return conditions < other.conditions;
     }
 };
 
@@ -118,6 +120,8 @@ DiagramSnapshot captureDiagram(
             transitionSnapshot.startType = static_cast<int>(start->GetID());
         if (auto finish = transition->GetFinishMachine().lock())
             transitionSnapshot.finishType = static_cast<int>(finish->GetID());
+        transitionSnapshot.conditions =
+            transition->GetConditions().GetAsString();
         snapshot.transitions.push_back(transitionSnapshot);
     }
     std::sort(snapshot.transitions.begin(), snapshot.transitions.end());
@@ -220,6 +224,8 @@ class MachineSerializationTest : public QObject {
                      original.transitions[i].startType);
             QCOMPARE(loaded.transitions[i].finishType,
                      original.transitions[i].finishType);
+            QCOMPARE(loaded.transitions[i].conditions,
+                     original.transitions[i].conditions);
         }
     }
 };

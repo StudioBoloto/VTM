@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
     }
     QGuiApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("VTM-headless"));
-    app.setApplicationVersion(QStringLiteral("1.0.2"));
+    app.setApplicationVersion(QStringLiteral(VTM_VERSION));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(

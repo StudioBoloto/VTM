@@ -1,5 +1,6 @@
 #include "VMTTransitionConditions.h"
 
+#include <QByteArray>
 #include <QDebug>
 
 #include "interfaces/IVMTTransition.h"
@@ -55,9 +56,9 @@ void VMTTransitionConditions::Deserialize(QDataStream& stream) {
 }
 
 void VMTTransitionConditions::Serialize(QDataStream& stream) {
-    stream << (short int)_signs.length();
-    const char* array = _signs.toStdString().c_str();
-    stream.writeRawData(array, _signs.length());
+    const QByteArray signs = _signs.toLatin1();
+    stream << static_cast<short int>(signs.size());
+    stream.writeRawData(signs.constData(), signs.size());
 }
 
 void VMTTransitionConditions::ChangeAlphabit(
