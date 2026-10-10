@@ -4,7 +4,7 @@ name: Desktop (Qt 6.5.3)
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, 'fix/**']
     tags: ['v*']
     paths:
       - 'VirtualTuringMachine/**'
@@ -191,7 +191,7 @@ jobs:
 
   build-windows:
     name: Windows x64
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
 
@@ -209,7 +209,7 @@ jobs:
       - name: Configure CMake
         shell: pwsh
         run: |
-          cmake -S . -B build -A x64 `
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
             -DBUILD_TESTING=OFF `
             -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR"
 
