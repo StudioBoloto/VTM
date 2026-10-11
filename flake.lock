@@ -33,6 +33,22 @@
         "type": "github"
       }
     },
+    "mini_cc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1738259546,
+        "narHash": "sha256-adUI86GOLKJLvfQTSa4+fxgdNdSO11/kxgcpnoq7Cvw=",
+        "owner": "danielbarter",
+        "repo": "mini_compile_commands",
+        "rev": "4009fccb4e5293aec133861aeb1e7e706607b5a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "danielbarter",
+        "repo": "mini_compile_commands",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1791254437,
@@ -68,6 +84,7 @@
       "inputs": {
         "flake-parts": "flake-parts",
         "import-tree": "import-tree",
+        "mini_cc": "mini_cc",
         "nixpkgs": "nixpkgs",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"

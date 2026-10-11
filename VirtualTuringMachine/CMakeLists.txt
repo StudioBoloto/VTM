@@ -86,9 +86,6 @@ if(APPLE AND NOT ANDROID)
   endif()
 endif()
 
-if(QT_VERSION_MAJOR EQUAL 6)
-  qt_finalize_executable(${PROJECT_NAME})
-endif()
+qt_finalize_executable(${PROJECT_NAME})
 
-install(TARGETS ${PROJECT_NAME} vtm_core)
-install(TARGETS ${PROJECT_NAME}-headless)
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}-headless)
