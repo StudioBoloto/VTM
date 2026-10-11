@@ -314,16 +314,12 @@ bool VMTMachineStub::IsPowerCalculator() { return true; }
 bool VMTMachineStub::IsSelected() { return this->_selected; }
 
 void VMTMachineStub::Move(const QPoint& center, IVMTEnvironment* environment) {
-    qDebug() << "Move begin\n";
     _center = center;
     Update(environment);
-    qDebug() << "Move end\n";
 }
 
 void VMTMachineStub::Update(IVMTEnvironment* environment) {
-    qDebug() << "Update begin\n";
     applyLayoutFromState(environment, true);
-    qDebug() << "Update end\n";
 }
 
 void VMTMachineStub::Move(const QPoint&& center, IVMTEnvironment* environment) {

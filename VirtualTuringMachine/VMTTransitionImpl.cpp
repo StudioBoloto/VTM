@@ -1,9 +1,11 @@
 #include "VMTTransitionImpl.h"
 
+#include "vmtmachines/VMTComplexMachine.h"
+
+#include "utils/ui.h"
+
 #include <algorithm>
 #include <cmath>
-
-#include "vmtmachines/VMTComplexMachine.h"
 
 #define PRECISION 5
 
@@ -319,7 +321,35 @@ void VMTTransitionImpl::UpdatePreview(IVMTEnvironment* environment) {
         finishInput = ptr->GetInputPoint();
     }
 
-    buildRubberBandRoute(startOutput, finishInput, stub, _points);
+    const auto startMachine = _start_machine.lock();
+    const auto finishMachine = _finish_machine.lock();
+
+    // A self-loop moves as one object with its machine. Updating endpoint
+    // stubs independently would overwrite the bends that route it around the
+    // machine and collapse the loop behind the machine icon.
+    if (startMachine && startMachine == finishMachine && _points.size() >= 2) {
+        const QPoint delta = startOutput - _points.front();
+        for (QPoint& point : _points) {
+            point += delta;
+        }
+        _points.front() = startOutput;
+        _points.back() = finishInput;
+    } else if (_points.size() >= 4) {
+        // Preserve existing bends while a machine is dragged. Only the
+        // endpoint stubs follow the moved ports.
+        _points.front() = startOutput;
+        _points[1] = QPoint(startOutput.x() + stub, startOutput.y());
+        _points.back() = finishInput;
+        _points[_points.size() - 2] =
+            QPoint(finishInput.x() - stub, finishInput.y());
+        buildRubberBandRoute(startOutput, finishInput, stub, _points);
+    }
+    refreshPaintBounds();
+}
+
+void VMTTransitionImpl::CommitPreview() {
+    _committedPoints = _points;
+    _changed = false;
     refreshPaintBounds();
 }
 
@@ -353,7 +383,6 @@ struct Event {
 bool VMTTransitionImpl::IsIntersectLine(
     [[maybe_unused]] IVMTEnvironment* environment, const QPoint& segmentStart,
     const QPoint& segmentEnd) {
-
     std::vector<Event> events;
     for (size_t i = 0; i + 1 < _points.size(); ++i) {
         int x1 = std::min(_points[i].x(), _points[i + 1].x());
@@ -391,12 +420,11 @@ bool VMTTransitionImpl::IsIntersectLine(
 
 bool VMTTransitionImpl::IsInside(IVMTEnvironment* environment,
                                  const QPoint& point) {
-    for(size_t i=1;i<_points.size();i++) {
-        if(IsInsideLine(_points[i-1],_points[i],point)) {
+    for (size_t i = 1; i < _points.size(); i++) {
+        if (IsInsideLine(_points[i - 1], _points[i], point)) {
             return true;
         }
     }
-
 
     if (GetConditionRectangle(environment->GetGraphics()).contains(point)) {
         return true;
@@ -469,32 +497,32 @@ void VMTTransitionImpl::Paint(UICanvas& canvas, const QRect& rect) {
         return;
     }
 
-            bool first = true;
+    bool first = true;
     QPoint last;
-    for(QPoint current: _points)
-    {
-        if(!first){
-            if(this->_highlighted)
-                canvas.DrawLineAnimation(last,current,_highlighted);
-            else canvas.DrawLine(last,current,_highlighted,_error);
-        } else first = false;
+    for (QPoint current : _points) {
+        if (!first) {
+            if (this->_highlighted)
+                canvas.DrawLineAnimation(last, current, _highlighted);
+            else
+                canvas.DrawLine(last, current, _highlighted, _error);
+        } else
+            first = false;
         last = current;
     }
 
-    if(_points.size()>1){
-        canvas.DrawArrow(_points[_points.size()-2],_points[_points.size()-1],_highlighted);
+    if (_points.size() > 1) {
+        canvas.DrawArrow(_points[_points.size() - 2],
+                         _points[_points.size() - 1], _highlighted);
     }
 
     if (!_conditions.IsAllEnabled()) {
         if (_conditions.GetAsString().length() > 0) {
             QRect rect = GetConditionRectangle(canvas);
-            QString text = _conditions.GetAsString();
+            QString text = utils::ui::escapeString(_conditions.GetAsString());
             canvas.FillRect(rect, this->_highlighted);
-            // canvas.DrawRectAnimation(_bounds,true);
             canvas.DrawText(text, _conditions_point, _condition_width / 2,
                             this->_highlighted);
 
-            // canvas.DrawText(text,rect);
         } else {
             QRect rect = GetConditionRectangle(canvas);
             canvas.DrawImage(ImageType::CANCEL, rect);

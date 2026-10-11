@@ -28,6 +28,8 @@ class IVMTTransition {
     virtual void UpdatePreview(IVMTEnvironment* environment) {
         (void)environment;
     }
+    /** Commit the currently displayed preview route without rerouting. */
+    virtual void CommitPreview() {}
 
     virtual void Drag(IVMTEnvironment* environment, const QPoint& p_Point) = 0;
     virtual void EndDrag(IVMTEnvironment* environment,

@@ -1,11 +1,13 @@
 #include "formalphabit.h"
 
-#include <QDebug>
-
 #include "interfaces/IVMTEnvironment.h"
 #include "screentools.h"
 #include "ui_formalphabit.h"
 #include "vmttheme.h"
+
+#include <QDebug>
+
+#include "utils/ui.h"
 
 FormAlphabit::FormAlphabit(IVMTAlphabitSource* alphabit_source,
                            IVMTEnvironment* environment, QWidget* parent)
@@ -35,9 +37,8 @@ FormAlphabit::FormAlphabit(IVMTAlphabitSource* alphabit_source,
     const int count = qMin(static_cast<int>(str.size()), 256);
     for (int i = 0; i < count; ++i) {
         QToolButton* label = &_buttons[i];
-        // label->setFlat(true);
         label->setProperty("sign", QString(QChar(str[i])));
-        label->setText(QString(QChar(str[i])));
+        label->setText(QString(utils::ui::escapeChar(str[i])));
         label->setCheckable(true);
         label->setStyleSheet(style);
 

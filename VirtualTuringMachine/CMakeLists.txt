@@ -46,7 +46,7 @@ if(APPLE)
 endif()
 
 set(ADDITIONAL_DIRS ${CMAKE_CURRENT_SOURCE_DIR} interfaces vmtactions
-                    vmtexport4th vmtexportplantuml vmtmachines)
+                    vmtexport4th vmtexportplantuml vmtmachines utils)
 include_directories(${ADDITIONAL_DIRS})
 
 file(

@@ -25,6 +25,7 @@ class VMTTransitionImpl : public IVMTTransition {
     void ChangeAlphabit(std::shared_ptr<VMTAlphabit> alphabit) override;
     void Changed(IVMTEnvironment* environment) override;
     void UpdatePreview(IVMTEnvironment* environment) override;
+    void CommitPreview() override;
 
     void Drag(IVMTEnvironment* environment, const QPoint& p_Point) override;
     void EndDrag(IVMTEnvironment* environment, const QPoint& p_Point) override;

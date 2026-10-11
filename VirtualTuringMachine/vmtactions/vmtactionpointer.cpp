@@ -346,10 +346,26 @@ bool VMTActionPointer::OnMouseReleased(IVMTEnvironment* environment,
             QRect old_rect;
             GetMachineRect(ptr, old_rect);
 
-            environment->setDeferTransitionRouting(false);
             QPoint center = ptr->GetCenter();
             environment->GetGraphics().SnapToGris(center);
             ptr->Move(center, environment);
+
+            // Keep the route shown by the last drag frame.  Disabling defer
+            // before Move() would call Changed() and replace the preview
+            // with a newly computed Pathfinder route.
+            for (const std::weak_ptr<IVMTTransition>& link :
+                 ptr->GetIncomingTransitions()) {
+                if (auto transition = link.lock()) {
+                    transition->CommitPreview();
+                }
+            }
+            for (const std::weak_ptr<IVMTTransition>& link :
+                 ptr->GetOutgoingTransitions()) {
+                if (auto transition = link.lock()) {
+                    transition->CommitPreview();
+                }
+            }
+            environment->setDeferTransitionRouting(false);
 
             GetActionRect(ptr, _action_rect, environment);
             _action_rect = _action_rect.united(old_rect);
