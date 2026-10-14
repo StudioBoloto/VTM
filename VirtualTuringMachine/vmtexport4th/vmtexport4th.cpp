@@ -197,20 +197,6 @@ std::string VMTExport4th::GetFullName(std::string prefix,
     result += std::to_string((unsigned long long)machine.get());
     return result;
 }
-/*
-std::string VMTExport4th::GetFullName(std::deque<std::string>
-&call_stack,std::shared_ptr<IVMTMachine> machine,size_t power){ std::string
-result ="";
-
-    for(std::string s:call_stack)
-        result+=s+":";
-    result += std::to_string((unsigned long long)machine.get());
-    result += "-";
-    result += std::to_string(power);
-
-    //qDebug() << result.c_str();
-    return result;
-}*/
 
 void VMTExport4th::MapState(size_t& index, std::string prefix,
                             std::deque<std::string>& call_stack,
@@ -273,9 +259,8 @@ void VMTExport4th::ProcessComplex(size_t parent_index, std::string prefix,
                 if (m->GetID() == IVMTMachine::MachineType::MT_FINISH) {
                     end_machine = m;
                     QString str = complex->GetAlphabit()->ToString();
-                    size_t index_start = state_index[GetFullName(
-                        full_name,
-                        end_machine)];  // GetFullName(call_stack,end_machine)];
+                    size_t index_start =
+                        state_index[GetFullName(full_name, end_machine)];
 
                     for (QChar c : str)
                         _callback->AppendText(
@@ -302,8 +287,9 @@ void VMTExport4th::Process(size_t parent_index, std::string prefix,
     for (auto l : current->GetIncomingTransitions())
         if (std::shared_ptr<IVMTTransition> lptr = l.lock()) {
             auto mptr = lptr->GetStartMachine().lock();
-            std::string incoming_name =
-                GetFullName(prefix, mptr);  // whate power???
+            std::string incoming_name = GetFullName(
+                prefix,
+                mptr);  // TODO(Tias) there might be power deducing errors
             size_t index_start = state_index[incoming_name];
 
             switch (mptr->GetID()) {
@@ -314,8 +300,6 @@ void VMTExport4th::Process(size_t parent_index, std::string prefix,
                         index_start = parent_index;
                     }
                     break;
-                    // if left machine is complex - then change index to finish
-                    // machine of complex
                 case IVMTMachine::MachineType::MT_COMPLEX:
                 case IVMTMachine::MachineType::MT_LEFT_WORD:
                 case IVMTMachine::MachineType::MT_RIGHT_WORD:
@@ -339,7 +323,8 @@ void VMTExport4th::Process(size_t parent_index, std::string prefix,
                             GetFullName(prefix, left_complex);
                         size_t finish_index = state_index[GetFullName(
                             complex_name,
-                            finish_machine)];  // add complex machine!!!!
+                            finish_machine)];  // TODO(Tias) check for complex
+                                               // machine handling
                         call_stack.pop_back();
                         qDebug() << "Replace index: " << index_start
                                  << " to parent:" << finish_index;
@@ -410,8 +395,6 @@ void VMTExport4th::Process(size_t parent_index, std::string prefix,
                     break;
             }
         }
-    // check for complex
-    //*
     std::shared_ptr<VMTComplexMachine> current_complex =
         std::dynamic_pointer_cast<VMTComplexMachine>(current);
     if (!current_complex)
@@ -421,9 +404,7 @@ void VMTExport4th::Process(size_t parent_index, std::string prefix,
         ProcessComplex(index, prefix, call_stack, current_complex, state_index,
                        environment);
     }
-    //*/
 
-    // check for outgoing connection
     for (std::weak_ptr<IVMTTransition> link :
          current->GetOutgoingTransitions()) {
         std::shared_ptr<IVMTTransition> link_ptr = link.lock();

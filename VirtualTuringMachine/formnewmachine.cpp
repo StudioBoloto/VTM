@@ -42,8 +42,6 @@ void FormNewMachine::BeforeChange(std::shared_ptr<UIStateData> state_data) {
     UIStateNewMachineData* data =
         dynamic_cast<UIStateNewMachineData*>(state_data.get());
     if (data) {
-        //        qDebug() << "Selected machine:" <<
-        //        ui->text_machine_name->text();
         VMTProject::GetInstance().GetCurrentMachineName() =
             ui->text_machine_name->text();
 
@@ -53,11 +51,7 @@ void FormNewMachine::BeforeChange(std::shared_ptr<UIStateData> state_data) {
                 std::shared_ptr<VMTComplexMachine>(new VMTComplexMachine(
                     VMTProject::GetInstance().GetCurrentMachineName(),
                     VMTProject::GetInstance().GetAlphabit())));
-            //        qDebug() << "Machine added:" <<
-            //        VMTProject::GetInstance().GetCurrentMachineName();
-        }  // else
-        //           qDebug() << "Machine selected:" <<
-        //           VMTProject::GetInstance().GetCurrentMachineName();
+        }
     }
 }
 
@@ -100,18 +94,15 @@ void FormNewMachine::on_button_ok_clicked() {
 void FormNewMachine::Check() {
     QString name = ui->text_machine_name->text();
     if (name.length() < 1) {
-        // ui->button_ok->setText(QString("Create or select   "));
         ui->button_delete_2->setVisible(false);
         ui->button_ok_2->setVisible(false);
     } else {
         if (!VMTProject::GetInstance().GetMachine(name)) {
             ui->button_ok_2->setVisible(true);
             ui->button_delete_2->setVisible(false);
-            // ui->button_ok->setText(QString("Create   "));
         } else {
             ui->button_ok_2->setVisible(true);
             ui->button_delete_2->setVisible(true);
-            // ui->button_ok->setText(QString("Select   "));
         }
     }
 }

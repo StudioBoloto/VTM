@@ -7,10 +7,6 @@
 #include <memory>
 #include <vector>
 
-// #include "IVMTMachine.h"
-// #include "IVMTTransition.h"
-// #include "IVMTEnvironment.h"
-// #include "VMTAlphabit.h"
 #include "VMTComplexMachineInner.h"
 #include "VMTMachineStub.h"
 #include "pathfinder.h"

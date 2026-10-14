@@ -351,7 +351,6 @@ void VMTMachineStub::RemoveChilds() {
     _outgoing.clear();
 }
 
-//*
 void VMTMachineStub::RemoveIncomingTransition(IVMTTransition* transition) {
     for (auto it = _incoming.begin(); it != _incoming.end();) {
         if (auto ptr = it->lock()) {
@@ -379,7 +378,6 @@ void VMTMachineStub::RemoveOutgoingTransition(IVMTTransition* transition) {
             it++;
     };
 }
-//*/
 
 void VMTMachineStub::SetError(bool error) { this->_error = error; }
 

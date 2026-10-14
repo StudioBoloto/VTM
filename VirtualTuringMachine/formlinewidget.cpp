@@ -100,14 +100,13 @@ bool FormLineWidget::eventFilter(QObject* object, QEvent* event) {
             if (&_line_edit[i] == object) index = i;
         if (index > 0) {
             _line->SetMachinePosition(_position + index);
-            // VMTProject::GetInstance().GetUndoManager()->Remember(_line->SetMachinePosition(_position+index));
 
             for (long i = 0; i <= (long)_count; i++) {
                 _line_edit[i].setStyleSheet(VmtTheme::lineEditTapeStyle(
                     _line->IsMachinePosition(_position + i)));
             }
         }
-        return false;  // lets the event continue to the edit
+        return false;
     }
     return false;
 }
@@ -124,15 +123,15 @@ void FormLineWidget::onEditChanged(QString text) {
                 if (_line->GetAlphabit()->IsSign(text[1].toLatin1()))
                     _line_edit[index].setText(QString(text[1]));
                 else
-                    _line_edit[index].setText(QString(QChar(_line->GetValueAt(
-                        _position + index))));  // else set old i think
+                    _line_edit[index].setText(
+                        QString(QChar(_line->GetValueAt(_position + index))));
 
             } else {
                 if (_line->GetAlphabit()->IsSign(text[0].toLatin1()))
                     _line_edit[index].setText(QString(text[0]));
                 else
-                    _line_edit[index].setText(QString(QChar(_line->GetValueAt(
-                        _position + index))));  // else set old i think
+                    _line_edit[index].setText(
+                        QString(QChar(_line->GetValueAt(_position + index))));
             }
         } else if (text.length() == 0) {
             if (_line->GetAlphabit())
@@ -141,7 +140,6 @@ void FormLineWidget::onEditChanged(QString text) {
         } else {
             if (_line->GetAlphabit()->IsSign(text[0].toLatin1()))
                 _line->SetValueAt(_position + index, text[0].toLatin1());
-            // VMTProject::GetInstance().GetUndoManager()->Remember(_line->SetValueAt(_position+index,text[0].toLatin1()));
             else
                 _line_edit[index].setText(
                     QString(QChar(_line->GetValueAt(_position + index))));

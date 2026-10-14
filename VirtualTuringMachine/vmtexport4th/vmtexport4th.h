@@ -60,8 +60,6 @@ class VMTExport4th {
                   std::map<std::string, size_t>& state_index,
                   IVMTEnvironment* environment);
 
-    // std::string GetFullName(std::deque<std::string>
-    // &call_stack,std::shared_ptr<IVMTMachine> machine,size_t power);
     std::string GetFullName(std::string prefix,
                             std::shared_ptr<IVMTMachine> machine);
     void Process(size_t parent_index, std::string prefix,

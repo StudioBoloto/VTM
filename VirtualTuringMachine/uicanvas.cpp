@@ -6,9 +6,6 @@
 #include "vmticons.h"
 #include "vmttheme.h"
 
-// #define STEP 20
-// #define FONT_SIZE 18
-
 UICanvas::UICanvas(QBrush background, QPen net,
                    [[maybe_unused]] QPen foreground, QSize size,
                    size_t font_size)
@@ -181,32 +178,17 @@ void UICanvas::PaintBackground(const QRect& rect, const QRect& bounds) {
 }
 
 void UICanvas::CalculateTextSize(const QString& text, QRect& rect) {
-    /*
-    double factor = GetFactor();
-    _font.setPointSizeF(_font_size*factor);
-    _painter->setFont(_font);
-    QFontMetrics metrics = _painter->fontMetrics();
-    QRect rect1 = metrics.boundingRect(text);
-
-    rect.setWidth(rect1.width());
-    rect.setHeight(rect1.height());
-    */
-    //*
     _font.setPointSizeF(_font_size);
     QFontMetrics fm(_font);
 
     rect.setWidth(fm.horizontalAdvance(text));
     rect.setHeight(fm.height());
-    //*/
 }
 
 void UICanvas::DrawButton(const QRect& rect) {
     std::lock_guard<std::mutex> guard(_mutex);
     const QBrush fill_brush(VmtTheme::machineFill());
     const QPen fill_pen(VmtTheme::diagramNodeBorder());
-    //    static QPen pen_white(QColor(255,255,255));
-    //    static QPen pen_blue(QColor(1,84,122));
-    //    static QBrush fill_blue(QColor(1,84,122));
     double factor = GetFactor();
 
     QRect to_draw((_state._center.rx() + rect.left()) * factor,
@@ -214,11 +196,6 @@ void UICanvas::DrawButton(const QRect& rect) {
                   rect.width() * factor, rect.height() * factor);
     _painter->setPen(fill_pen);
     _painter->fillRect(to_draw, fill_brush);
-    //_painter->setBrush(fill_blue);
-    //_painter->drawRect(to_draw);
-    //_painter->setPen(pen_blue);
-    //_painter->drawEllipse(QRect(to_draw.right()-to_draw.height()/4,to_draw.top()+1,to_draw.height()/2,to_draw.height()-2));
-    //_painter->fillRect(QRect(to_draw.left(),to_draw.top(),3,to_draw.height()),fill_blue);
 }
 
 void UICanvas::FillRect(const QRect& rect, bool selected) {
@@ -440,7 +417,6 @@ void UICanvas::DrawText(const QString& text, const QPoint center, size_t size,
     float _heightToFitIn = size * factor;
     float oldFontSize = _font.pointSizeF();
     float newFontSize;
-    // Loop
     for (int i = 0; i < 3; i++) {
         float oldHeight = _painter->fontMetrics().boundingRect('D').height();
         newFontSize = (_heightToFitIn / oldHeight) * oldFontSize;
@@ -458,37 +434,6 @@ void UICanvas::DrawText(const QString& text, const QPoint center, size_t size,
         (_state._center.ry() + center.y()) * factor + fontRect.height() / 3);
     _painter->drawText(point, text);
 }
-/*
-void UICanvas::DrawText(const QString& text,const QRect &bounds,bool selected){
-    std::lock_guard<std::mutex> guard(_mutex);
-    double factor = GetFactor();
-
-    if(selected) _painter->setPen(_pen_selected);
-    else _painter->setPen(_pen_foreground);
-
-    float _heightToFitIn = bounds.height()*factor;
-    float oldFontSize=_font.pointSizeF();
-    float newFontSize;
-    // Loop
-    for (int i=0 ; i<3 ; i++)
-    {
-        float oldHeight = _painter->fontMetrics().boundingRect('D').height();
-        newFontSize = (_heightToFitIn / oldHeight) * oldFontSize;
-        _font.setPointSizeF(newFontSize);
-        _painter->setFont(_font);
-        oldFontSize = newFontSize;
-    }
-
-    _font.setPointSizeF(newFontSize);
-    _painter->setFont(_font);
-    QRect fontRect = _painter->fontMetrics().boundingRect(text);
-
-
-    QPoint
-point((_state._center.rx()+bounds.left()+bounds.width()/2-fontRect.width()/2)*factor,
-                 (_state._center.ry()+bounds.bottom()-bounds.height()/2+fontRect.height()/2)*factor);
-    _painter->drawText(point,text);
-}*/
 
 const UICanvasState& UICanvas::GetState() { return _state; }
 

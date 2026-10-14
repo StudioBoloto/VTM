@@ -501,11 +501,9 @@ void VMTTransitionImpl::Paint(UICanvas& canvas, const QRect& rect) {
             QRect rect = GetConditionRectangle(canvas);
             QString text = utils::ui::escapeString(_conditions.GetAsString());
             canvas.FillRect(rect, this->_highlighted);
-            // canvas.DrawRectAnimation(_bounds,true);
             canvas.DrawText(text, _conditions_point, _condition_width / 2,
                             this->_highlighted);
 
-            // canvas.DrawText(text,rect);
         } else {
             QRect rect = GetConditionRectangle(canvas);
             canvas.DrawImage(ImageType::CANCEL, rect);
@@ -808,17 +806,10 @@ QRect VMTTransitionImpl::GetConditionRectangle(
     if (text.length() > 0) {
         rect.setWidth(_st.GetCellSize().width() * text.length());
         rect.setHeight(_st.GetCellSize().height());
-        //      canvas.CalculateTextSize(text,rect);
     }
 
     rect.moveLeft(rect.left() - rect.width() / 2);
     rect.moveTop(rect.top() - rect.height() / 2);
-    /*
-        rect.setTop(rect.top()-rect.height()/2);
-        rect.setHeight(rect.height());
-
-        rect.setLeft(rect.left()-rect.width()/2);
-        rect.setWidth(rect.width());*/
 
     return rect;
 }

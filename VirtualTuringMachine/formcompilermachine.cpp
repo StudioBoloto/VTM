@@ -257,10 +257,7 @@ void FormCompilerMachine::CheckDublicate(
     }
 }
 
-FormCompilerMachine::~FormCompilerMachine() {
-    // ClearErrors();
-    delete ui;
-}
+FormCompilerMachine::~FormCompilerMachine() { delete ui; }
 
 void FormCompilerMachine::on_list_errors_currentRowChanged(int currentRow) {
     qDebug() << "FormCompilerMachine::on_list_errors_currentRowChanged";

@@ -100,9 +100,9 @@ void VMTDebuger::Step(IVMTEnvironment* environment) {
                     long power = _state.machine->GetPower();
                     auto old_machine = _state.machine;
                     _stack.push(_state);
-                    _state.complex_machine = std::dynamic_pointer_cast<
-                        VMTComplexMachine>(_state.machine->CreateComplexMachine(
-                        environment));  // std::dynamic_pointer_cast<VMTComplexMachine>(_state.machine);
+                    _state.complex_machine =
+                        std::dynamic_pointer_cast<VMTComplexMachine>(
+                            _state.machine->CreateComplexMachine(environment));
                     environment->SetMachine(_state.complex_machine);
                     for (std::shared_ptr<IVMTMachine> ptr :
                          _state.complex_machine->GetMachineCollection())

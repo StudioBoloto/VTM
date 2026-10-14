@@ -11,7 +11,6 @@ VMTActionCreateAndConnect::VMTActionCreateAndConnect(
       _machine(machine) {}
 
 void VMTActionCreateAndConnect::Cancel(IVMTEnvironment* environment) {
-    // environment->EnableAnimation(false);
     if (_machine->IsAlphabit())
         environment->DisableAlphabit();
     else
@@ -54,7 +53,6 @@ void VMTActionCreateAndConnect::Enable(IVMTEnvironment* environment) {
         environment->EnableActionHint(str, *environment->GetGraphics().GetImage(
                                                _machine->GetImageType()));
     }
-    // environment->EnableAnimation(true);
 }
 
 bool VMTActionCreateAndConnect::OnMouseMoved(

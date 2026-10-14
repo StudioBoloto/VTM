@@ -11,8 +11,6 @@
 #define SHIFT_STEP 10
 class VMTLine {
    private:
-    // IVMTLineObserver* _observer;
-
     std::shared_ptr<VMTAlphabit> _alphabit;
     std::vector<char*> _array;
     long _machine;

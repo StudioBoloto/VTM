@@ -31,17 +31,11 @@ void VMTComplexMachine::Update(IVMTEnvironment* environment) {
         _size = QPoint(
             VMTMachineStub::_st.GetCellSize().width() * GetNickName().size(),
             VMTMachineStub::_st.GetCellSize().height());
-        // environment->GetGraphics().CalculateTextSize(GetNickName(),bounds);
-        //_size.rx() = bounds.width();
-        //_size.ry() = bounds.height();
         _internal_bounds.setWidth(bounds.width());
         _internal_bounds.setHeight(bounds.height());
     }
 
     VMTMachineStub::Update(environment);
-
-    // if(environment)
-    //   environment->Repaint(QRect());
 }
 
 std::shared_ptr<VMTComplexMachine> VMTComplexMachine::CreatePlainCopy(
@@ -279,7 +273,6 @@ void VMTComplexMachine::Paint(UICanvas& canvas, const QRect& rect) {
     VMTMachineStub::Paint(canvas, rect);
     canvas.DrawText(GetNickName(), _internal_bounds.center(),
                     _internal_bounds.height(), false);
-    // canvas.DrawText(GetNickName(),_internal_bounds,this->IsSelected());
 }
 
 void VMTComplexMachine::PaintDiagram(UICanvas& canvas, const QRect& rect) {
@@ -413,13 +406,6 @@ void VMTComplexMachine::ReplaceMachine(VMTComplexMachine* machine) {
     }
 }
 
-// void VMTComplexMachine::SetInner(VMTComplexMachine* src, VMTComplexMachine*
-// parent){
-// }
-
-// void VMTComplexMachine::SetInnerObject(VMTComplexMachineInner* inner){
-// }
-
 void VMTComplexMachine::SetName(const QString& name) {
     this->_name = name;
     QStringList list = name.split(" ");
@@ -430,6 +416,4 @@ void VMTComplexMachine::SetName(const QString& name) {
     this->_nick_name += QString::number(_name.size());
 }
 
-VMTComplexMachine::~VMTComplexMachine() {
-    // qDebug() << "Delete complex machine";
-}
+VMTComplexMachine::~VMTComplexMachine() {}

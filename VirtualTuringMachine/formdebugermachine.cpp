@@ -204,7 +204,6 @@ void FormDebugerMachine::RunTimer() {
         _controller->EnableDebugStep(true);
         _controller->EnableDebugRun(true);
         _controller->EnableDebugStop(false);
-        //_debugger.ToStart(this);
 
         if (VMTProject::GetInstance().IsTestMode()) {
             CheckTest();

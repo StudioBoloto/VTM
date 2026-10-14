@@ -50,9 +50,6 @@ void FormCalculator::on_text_power_textChanged(const QString&) {
         _machine->Update(_environment);
         QRect rect;
         if (_environment) _environment->Repaint(rect);
-        // VMTProject::GetInstance().GetUndoManager()->Remember(
-        //            std::shared_ptr<VMTUndoElementMachine>(new
-        //            VMTUndoElementMachine()));
     }
 }
 

@@ -17,20 +17,14 @@ class VMTComplexMachineInner {
     VMTComplexMachineInner();
     virtual ~VMTComplexMachineInner();
 
-    VMTComplexMachineInner(QString name,
-                           std::shared_ptr<VMTAlphabit>
-                               alphabit);  //,  IVMTEnvironment* environment);
-    VMTComplexMachineInner(std::shared_ptr<VMTAlphabit>
-                               alphabit);  //,  IVMTEnvironment* environment);
-    // void SetEnvironment(IVMTEnvironment* environment);
+    VMTComplexMachineInner(QString name, std::shared_ptr<VMTAlphabit> alphabit);
+    VMTComplexMachineInner(std::shared_ptr<VMTAlphabit> alphabit);
+
     void ChangeAlphabit(const std::shared_ptr<VMTAlphabit> other);
 
-    // std::vector<VMTComplexMachine> FindComplexMachineByName(QString name);
-    // std::vector<VMTComplexMachine> GetComplexMachines();
     QRect GetDiagramBounds();
 
     std::shared_ptr<VMTAlphabit> GetAlphabit();
-    // IVMTEnvironment* GetEnvironment();
     std::vector<std::shared_ptr<IVMTMachine>>& GetMachineCollection();
     std::vector<std::shared_ptr<IVMTTransition>>& GetTransitionCollection();
     void PaintDiagramm(UICanvas& canvas, QRect rect, bool all);
@@ -43,7 +37,6 @@ class VMTComplexMachineInner {
    private:
     QString _name;
     std::shared_ptr<VMTAlphabit> _alphabit;
-    // IVMTEnvironment *_environment;
     std::vector<std::shared_ptr<IVMTMachine>> _machines;
     std::vector<std::shared_ptr<IVMTTransition>> _transitions;
     DiagramRoutingPass _routingPass;

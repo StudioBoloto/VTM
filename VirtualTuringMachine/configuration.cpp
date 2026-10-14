@@ -1,5 +1,7 @@
 #include "configuration.h"
 
+#include <qmessagebox.h>
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
@@ -47,8 +49,6 @@ void Configuration::AddRecentProject(QString& name) {
 const QString& Configuration::GetDefaultLocation() { return _default_location; }
 
 void Configuration::LoadExercises() {
-    //
-
     QFile file("://config/exercises.xml");
 
     if (file.open(QFile::ReadOnly | QFile::Text)) {
@@ -106,12 +106,11 @@ void Configuration::Init(QApplication* app) {
     _default_location = QDir::homePath();
     QFile file(configurationFilePath());
 
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        //        QMessageBox box;
-        //      box.setText(filename);
-        //        box.exec();
-        // qDebug(qPrintable(QString("Error: Cannot read file %1
-        // %2").arg(filename).arg(file.errorString())));
+    if (file.exists() && !file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox box;
+        box.setText(QString{"Error: can't open config file: "} +
+                    configurationFilePath());
+        box.exec();
     } else {
         QXmlStreamReader reader(file.readAll());
         while (!reader.atEnd() && !reader.hasError()) {
@@ -136,8 +135,10 @@ void Configuration::Save() {
     QFile file(configurationFilePath());
 
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        // qDebug(qPrintable(QString("Error: Cannot write file %1
-        // %2").arg(filename).arg(file.errorString())));
+        QMessageBox box;
+        box.setText(QString{"Error: can't open config file: "} +
+                    configurationFilePath());
+        box.exec();
     } else {
         QXmlStreamWriter stream(&file);
         stream.setAutoFormatting(true);

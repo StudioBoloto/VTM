@@ -102,9 +102,6 @@ FormEditorMachine::FormEditorMachine(QWidget* parent)
 
     ui->properties_frame->setHidden(true);
     st.ResizePropertyPanel(ui->properties_frame);
-
-    // ui->properies_splitter->setStretchFactor(0,3);
-    // ui->properies_splitter->setStretchFactor(1,1);
 }
 
 void FormEditorMachine::Run() {
@@ -238,7 +235,6 @@ void FormEditorMachine::ExportMachine() {
     QFileDialog dlg;
     dlg.setWindowTitle("Export Turing Machine Image");
     dlg.setAcceptMode(QFileDialog::AcceptSave);
-    // dlg.setLabelText(QFileDialog::LookIn,"OPEN");
     dlg.setFileMode(QFileDialog::AnyFile);
     dlg.setViewMode(QFileDialog::List);
     QStringList filters;
@@ -247,8 +243,6 @@ void FormEditorMachine::ExportMachine() {
     dlg.setNameFilters(filters);
     dlg.resize(QApplication::primaryScreen()->availableSize());
     if (dlg.exec() == QDialog::Accepted) {
-        // QString file = QFileDialog::getSaveFileName(this,"Export to
-        // PNG",VMTProject::GetInstance().GetLocation(),QString("png"));
         QStringList fileName = dlg.selectedFiles();
         if (fileName.length() > 0) {
             QString file = fileName[0];
@@ -265,7 +259,8 @@ void FormEditorMachine::ExportMachine() {
                 QImage image(QSize(rect.width(), rect.height()),
                              QImage::Format_ARGB32);
                 QPainter painter;
-                painter.begin(&image);  // Here is the error. See below
+                painter.begin(&image);  // TODO(Tias) check for existence of
+                                        // error described "below"
                 ScreenTools st;
                 UICanvas canvas(QBrush(VmtTheme::diagramBackground()),
                                 QPen(VmtTheme::diagramGrid(), 1, Qt::DotLine,
@@ -280,11 +275,6 @@ void FormEditorMachine::ExportMachine() {
                 p.setX(-p.x());
                 p.setY(-p.y());
                 canvas.MoveInScreen(p);
-
-                // QRect area =
-                // canvas.ToScreen(ui->widget_editor->GetComplexMachine()->GetBoundsWithChilds());
-                // rect.setWidth(rect.width()-rect.left());
-                // rect.setHeight(rect.height()-rect.top());
 
                 rect.moveLeft(0);
                 rect.moveTop(0);
@@ -356,21 +346,9 @@ void FormEditorMachine::ExportPlantUml() {
     file.close();
 }
 
-void FormEditorMachine::BeforeChange(std::shared_ptr<UIStateData> state_data) {
-    UIStateEditorMachineData* data =
-        dynamic_cast<UIStateEditorMachineData*>(state_data.get());
-    if (data) {
-        // data->_machine = ui->widget_editor->GetComplexMachine();
-    }
-}
+void FormEditorMachine::BeforeChange(std::shared_ptr<UIStateData> state_data) {}
 
-void FormEditorMachine::AfterUndo(std::shared_ptr<UIStateData> state_data) {
-    UIStateEditorMachineData* data =
-        dynamic_cast<UIStateEditorMachineData*>(state_data.get());
-    if (data) {
-        // ui->widget_editor->GetComplexMachine() = data->_machine;
-    }
-}
+void FormEditorMachine::AfterUndo(std::shared_ptr<UIStateData> state_data) {}
 
 FormEditorMachine::~FormEditorMachine() { delete ui; }
 
@@ -420,7 +398,6 @@ void FormEditorMachine::EnableCalculator(std::shared_ptr<IVMTMachine> machine) {
     ui->properties->layout()->setContentsMargins(0, 0, 0, 0);
     ui->properties->layout()->addWidget(
         _form_calculator = new FormCalculator(machine, this, ui->properties));
-    // ui->label_image->setPixmap(*GetGraphics().GetImage(machine->GetImageType()));
     ui->label_image->setPixmap(GetGraphics()
                                    .GetImage(machine->GetImageType())
                                    ->scaled(st.GetImageSize(),

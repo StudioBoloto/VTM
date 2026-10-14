@@ -43,13 +43,6 @@ void ScreenTools::ResizeButtonBig(QToolButton* btn) {
     btn->setIconSize(size2);
     btn->setMaximumHeight(size2.height());
 }
-/*
-void ScreenTools::ResizeLabel(QLabel *label){
-
- //   label->setMaximumWidth(size.width()/4);
- //   label->setMaximumHeight(size.height()/4);
-}
-*/
 void ScreenTools::ResizeButton(QToolButton* btn) {
     btn->setIconSize(size);
     btn->setMaximumHeight(size.height());
@@ -58,15 +51,6 @@ void ScreenTools::ResizeButton(QPushButton* btn) {
     btn->setIconSize(size);
     btn->setMaximumHeight(size.height());
 }
-/*
-void ScreenTools::ResizeSlider(QSlider *sld){
-  sld->setMinimumSize(size);
-}
-
-void ScreenTools::ResizeFrame(QFrame *frame){
- frame->setMinimumSize(size);
-}
-*/
 void ScreenTools::ResizePropertyPanel(QFrame* frame) {
     int pxls = cvtMm2Px(6);
     frame->setMinimumSize(QSize(pxls, pxls));

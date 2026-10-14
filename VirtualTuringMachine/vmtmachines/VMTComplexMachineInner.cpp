@@ -2,9 +2,7 @@
 
 #include <QDebug>
 
-VMTComplexMachineInner::~VMTComplexMachineInner() {
-    // qDebug() << "Complex machine deleted";
-}
+VMTComplexMachineInner::~VMTComplexMachineInner() {}
 
 VMTComplexMachineInner::VMTComplexMachineInner(
     QString name, std::shared_ptr<VMTAlphabit> alphabit)
@@ -12,8 +10,7 @@ VMTComplexMachineInner::VMTComplexMachineInner(
 
 VMTComplexMachineInner::VMTComplexMachineInner(
     std::shared_ptr<VMTAlphabit> alphabit)
-    :  //,  IVMTEnvironment* environment):
-      _alphabit(alphabit) {}
+    : _alphabit(alphabit) {}
 
 void VMTComplexMachineInner::ChangeAlphabit(
     const std::shared_ptr<VMTAlphabit> other) {

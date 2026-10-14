@@ -63,7 +63,4 @@ bool VMTActionTranslate::OnMouseReleased(IVMTEnvironment* environment,
     return true;
 }
 
-void VMTActionTranslate::Paint(UICanvas&, const QRect&) {
-    // QRect action_rect(_position.rx(),_position.ry(),10,10);
-    // canvas.DrawRect(action_rect);
-}
+void VMTActionTranslate::Paint(UICanvas&, const QRect&) {}

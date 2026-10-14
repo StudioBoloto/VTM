@@ -22,14 +22,11 @@ FormNewProject::FormNewProject(QWidget* parent)
     ui->setupUi(this);
     VmtTheme::applyThemedWidgets(this);
     VmtTheme::applyIconToolBar(ui->frame);
-    // ui->combo_project_type->addItem("Turing machine project");
-    // ui->combo_project_type->setCurrentIndex(0);
 
     ui->text_project_location->setText(VMTProject::GetInstance().GetLocation());
     ui->text_project_name->setText(VMTProject::GetInstance().GetName());
-    ui->text_alphabit->setText(VMTProject::GetInstance()
-                                   .GetAlphabit()
-                                   ->ToString());  // data->alphabit);
+    ui->text_alphabit->setText(
+        VMTProject::GetInstance().GetAlphabit()->ToString());
 
     if (VMTProject::GetInstance().GetExercise()) {
         ui->text_alphabit->setEnabled(false);
@@ -78,13 +75,11 @@ void FormNewProject::AfterUndo(std::shared_ptr<UIStateData> state_data) {
     UIStateNewProjectData* data =
         dynamic_cast<UIStateNewProjectData*>(state_data.get());
     if (data) {
-        ui->text_project_name->setText(
-            VMTProject::GetInstance().GetName());  // data->name);
+        ui->text_project_name->setText(VMTProject::GetInstance().GetName());
         ui->text_project_location->setText(
-            VMTProject::GetInstance().GetLocation());  // data->location);
-        ui->text_alphabit->setText(VMTProject::GetInstance()
-                                       .GetAlphabit()
-                                       ->ToString());  // data->alphabit);
+            VMTProject::GetInstance().GetLocation());
+        ui->text_alphabit->setText(
+            VMTProject::GetInstance().GetAlphabit()->ToString());
         Check();
     }
 }
@@ -121,16 +116,12 @@ void FormNewProject::on_button_project_location_clicked() {
     QFileDialog dlg;
     dlg.setWindowTitle("Project place");
     dlg.setAcceptMode(QFileDialog::AcceptOpen);
-    // dlg.setLabelText(QFileDialog::LookIn,"OPEN");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setViewMode(QFileDialog::List);
     dlg.resize(QApplication::primaryScreen()->availableSize());
     if (dlg.exec() == QDialog::Accepted) {
-        // QString file = QFileDialog::getSaveFileName(this,"Export to
-        // PNG",VMTProject::GetInstance().GetLocation(),QString("png"));
         QStringList fileName = dlg.selectedFiles();
 
-        // QString file =  QFileDialog::getExistingDirectory();
         if (fileName.length() > 0) {
             QString file = fileName[0];
             if (file.size() > 0) ui->text_project_location->setText(file);
@@ -160,7 +151,7 @@ void FormNewProject::on_text_alphabit_textChanged() {
 void FormNewProject::Check() {
     QString alphabit = ui->text_alphabit->toPlainText();
     if (alphabit.length() < 2) {
-        ui->button_create->setVisible(false);  // setDisabled(true);
+        ui->button_create->setVisible(false);
     } else
         ui->button_create->setVisible(true);
 }

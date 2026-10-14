@@ -29,7 +29,6 @@ class FormAlphabit : public QWidget {
     Ui::FormAlphabit* ui;
     IVMTAlphabitSource* _alphabit_source;
     IVMTEnvironment* _environment;
-    // std::vector<QPushButton*> _buttons;
     std::vector<QString> _names;
     FlowLayout _layout;
     QToolButton _buttons[256];

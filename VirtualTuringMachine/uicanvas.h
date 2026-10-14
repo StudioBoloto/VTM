@@ -124,8 +124,6 @@ class UICanvas {
     void DrawRect(const QRect& rect, bool selected = false, bool error = false);
     void DrawRectScreen(const QRect& rect);
     void DrawRectAnimation(const QRect& rect, bool selected = false);
-    // void DrawText(const QString& text,const QRect &bounds,bool
-    // selected=false);
     void DrawText(const QString& text, const QPoint center, size_t size,
                   bool selected = false);
 };

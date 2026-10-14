@@ -38,10 +38,6 @@ FormMain::FormMain(QWidget* parent) : QWidget(parent), ui(new Ui::FormMain) {
 
     ui->listWidget->setStyleSheet(VmtTheme::listSurfaceStyle());
     VmtTheme::applyIconToolBar(ui->frame);
-
-    //    QObject::connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem
-    //    *)),
-    //                     this, SLOT(onItemClicked(QListWidgetItem *)));
 }
 
 void FormMain::BeforeChange(std::shared_ptr<UIStateData>) {}

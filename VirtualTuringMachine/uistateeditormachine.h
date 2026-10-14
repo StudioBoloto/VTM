@@ -83,8 +83,6 @@ class UIStateEditorMachine : public UIStateStub<FormEditorMachine>,
 
 class UIStateEditorMachineData : public UIStateData {
    public:
-    // std::shared_ptr<VMTComplexMachine> _machine;
-
     bool IsNeedWarning() override { return false; }
 
     std::shared_ptr<UIState> ConstructNewState(

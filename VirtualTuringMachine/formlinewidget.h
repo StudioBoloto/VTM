@@ -49,7 +49,7 @@ class FormLineWidget : public QWidget {
 
     void RightShiftActiveLineEdit(int currentIndex);
     bool isShiftFromType =
-        true;  // Input from keyboard, not from Right, RightPage, etc.
+        true;  // TODO(Tias) refactor to better shifting logic
 
    private slots:
     void onEditChanged(QString text);

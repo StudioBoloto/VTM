@@ -69,15 +69,7 @@ void FormExercises::OnSelectionChanged(const QItemSelection& selection) {
     }
 }
 
-void FormExercises::BeforeChange(std::shared_ptr<UIStateData> state_data) {
-    UIStateExercisesData* data =
-        dynamic_cast<UIStateExercisesData*>(state_data.get());
-    if (data) {
-        //        state_data->SetName(ui->text_project_name->text());
-
-        //        Save();
-    }
-}
+void FormExercises::BeforeChange(std::shared_ptr<UIStateData> state_data) {}
 
 QAbstractItemModel* FormExercises::createModel() {
     QStandardItemModel* model = new QStandardItemModel();
@@ -112,16 +104,7 @@ QAbstractItemModel* FormExercises::createModel() {
     return model;
 }
 
-void FormExercises::AfterUndo(std::shared_ptr<UIStateData> state_data) {
-    UIStateExercisesData* data =
-        dynamic_cast<UIStateExercisesData*>(state_data.get());
-    if (data) {
-        //       ui->text_project_name->setText(VMTProject::GetInstance().GetName());//data->name);
-        //       ui->text_project_location->setText(VMTProject::GetInstance().GetLocation());//data->location);
-        //       ui->text_alphabit->setText(VMTProject::GetInstance().GetAlphabit()->ToString());//data->alphabit);
-        //       Check();
-    }
-}
+void FormExercises::AfterUndo(std::shared_ptr<UIStateData> state_data) {}
 
 FormExercises::~FormExercises() { delete ui; }
 

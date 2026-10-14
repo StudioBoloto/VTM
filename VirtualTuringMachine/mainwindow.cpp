@@ -29,17 +29,6 @@ MainWindow::MainWindow(QWidget* parent)
     VmtTheme::applyIconToolBar(ui->frame_header);
     ui->widgetLabel->setStyleSheet(VmtTheme::headerChromeStyle());
 
-    // QPalette pal(palette());
-
-    // set black background
-    // pal.setColor(QPalette::Background, QColor("#012C40"));
-    // pal.setColor(QPalette::ButtonText,Qt::white);
-    // ui->frame_header->setAutoFillBackground(true);
-    // ui->frame_header->setPalette(pal);
-    // ui->widgetLabel->setPalette(pal);
-
-    // ui->frame_header->setStyleSheet("background-color:#01547a;");
-
     QObject::connect(ui->button_back, SIGNAL(clicked()), this,
                      SLOT(onBackClicked()));
 
@@ -75,11 +64,6 @@ MainWindow::MainWindow(QWidget* parent)
     updateThemeButton();
     connect(ui->button_theme, &QToolButton::toggled, this,
             &MainWindow::on_button_theme_toggled);
-
-    // st.ResizeSlider(ui->slider_zoom);
-    // st.ResizeFrame(ui->frame_zoom);
-
-    // st.ResizeLabel(ui->label_2);
 
     this->ChangeState(std::shared_ptr<UIStateMainData>(new UIStateMainData()));
     VmtTheme::applyThemedWidgets(this);
@@ -163,9 +147,6 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 void MainWindow::ShowWarning(std::shared_ptr<UIStateData>) {
     if (!_form_warning) {
         if (GetContainer()->layout()->count() > 0) {
-            //_form_warning_state =
-            // dynamic_cast<QWidget*>(GetContainer()->layout()->children().at(0));
-            //_form_warning_state->setHidden(true);
             _form_warning = new FormWarning(this, GetContainer());
             GetContainer()->layout()->addWidget(_form_warning);
             GetContainer()->layout()->setContentsMargins(0, 0, 0, 0);
@@ -206,7 +187,6 @@ void MainWindow::HideWarning(bool undo) {
         GetContainer()->layout()->removeWidget(_form_warning);
         delete _form_warning;
         _form_warning = nullptr;
-        //_form_warning_state->setHidden(false);
         if (undo) UndoForce();
     }
 }
@@ -259,7 +239,6 @@ void MainWindow::OnChanged(std::shared_ptr<UIState> state,
 
         QFont font = label->font();
         font.setUnderline(true);
-        // font.setBold(true);
         label->setProperty("state", count++);
         label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         label->setStyleSheet(VmtTheme::breadcrumbLinkStyle());

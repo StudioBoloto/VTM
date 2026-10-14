@@ -130,6 +130,4 @@ void VMTMachineAlpha::SetEnable(char sign, bool enable,
 
 QString VMTMachineAlpha::GetSign() { return QString(_sign); }
 
-VMTMachineAlpha::~VMTMachineAlpha() {
-    // qDebug() << "Delete alpha";
-}
+VMTMachineAlpha::~VMTMachineAlpha() {}

@@ -32,7 +32,6 @@ void FormExport4th::AfterUndo(
     [[maybe_unused]] std::shared_ptr<UIStateData> state_data) {}
 
 void FormExport4th::OnLoaded() {
-    // ui->edit_location->setText(VMTProject::GetInstance().GetLocation());
     qDebug() << VMTProject::GetInstance().GetCurrentMachineName();
 }
 
@@ -103,13 +102,11 @@ void FormExport4th::Clear() {
     _information = "";
 }
 void FormExport4th::AppendText(const QString& text) {
-    // ui->_text->append(text);
     _output.append(text);
     _output.append("\r\n");
 }
 
 void FormExport4th::Information(const QString& text) {
-    // ui->information->setText(text);
     _information.append(text);
 }
 
