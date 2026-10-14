@@ -1,5 +1,9 @@
 #include "VMTJsonSerializer.h"
 
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qstringview.h>
+
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
@@ -10,6 +14,8 @@
 #include <QSet>
 #include <QUuid>
 #include <functional>
+#include <optional>
+#include <stdexcept>
 
 #include "VMTAlphabit.h"
 #include "VMTTransitionImpl.h"
@@ -221,8 +227,10 @@ bool VMTJsonSerializer::isJsonPath(const QString& path) {
            path.endsWith(QLatin1String(".vmt.json"), Qt::CaseInsensitive);
 }
 
-bool VMTJsonSerializer::serialize(VMTProject* project) const {
-    if (!project) return false;
+namespace {
+std::optional<QByteArray> PackProjectToJson(VMTProject* project,
+                                            bool pretty = true) {
+    if (!project) return std::nullopt;
 
     QMap<std::shared_ptr<VMTComplexMachineInner>, QString> innerIds;
     QMap<IVMTMachine*, QString> machineIds;
@@ -303,24 +311,16 @@ bool VMTJsonSerializer::serialize(VMTProject* project) const {
     root.insert(QStringLiteral("createdAt"), now);
     root.insert(QStringLiteral("updatedAt"), now);
 
-    QFile file(_file_name);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "VMTJsonSerializer: cannot write" << _file_name;
-        return false;
-    }
-    file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
-    return true;
+    QJsonDocument::JsonFormat format =
+        pretty ? QJsonDocument::Indented : QJsonDocument::Compact;
+    return QJsonDocument(root).toJson(format);
 }
 
-bool VMTJsonSerializer::deserialize(VMTProject* project) const {
-    if (!project) return false;
-
-    QFile file(_file_name);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "VMTJsonSerializer: cannot read" << _file_name;
+bool UnpackProjectFromJson(VMTProject* project, const QByteArray& bytes) {
+    if (!project) {
         return false;
     }
-    const QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    const QJsonDocument doc = QJsonDocument::fromJson(bytes);
     if (!doc.isObject()) return false;
     const QJsonObject root = doc.object();
 
@@ -458,4 +458,45 @@ bool VMTJsonSerializer::deserialize(VMTProject* project) const {
     }
 
     return !project->GetMachines().empty();
+}
+
+}  // namespace
+
+bool VMTJsonSerializer::serialize(VMTProject* project) const {
+    auto packed_project = PackProjectToJson(project, /*pretty=*/true);
+    if (!packed_project) {
+        return false;
+    }
+
+    QFile file(_file_name);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "VMTJsonSerializer: cannot write" << _file_name;
+        return false;
+    }
+    file.write(*packed_project);
+    return true;
+}
+
+QByteArray VMTJsonSerializer::serializeInMemory(VMTProject* project) {
+    auto packed_project = PackProjectToJson(project, /*pretty=*/false);
+    if (!packed_project) {
+        throw std::logic_error("Failed pack project to bytes array");
+    }
+    return *packed_project;
+}
+
+bool VMTJsonSerializer::deserializeFromMemory(VMTProject* project,
+                                              QByteArray serialized_project) {
+    return UnpackProjectFromJson(project, serialized_project);
+}
+
+bool VMTJsonSerializer::deserialize(VMTProject* project) const {
+    if (!project) return false;
+
+    QFile file(_file_name);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "VMTJsonSerializer: cannot read" << _file_name;
+        return false;
+    }
+    return UnpackProjectFromJson(project, file.readAll());
 }

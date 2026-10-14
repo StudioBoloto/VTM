@@ -147,8 +147,7 @@ bool FormExercises::OpenProject(QString& file) {
             return false;
         }
     } else {
-        VMTSerializer serializer(file);
-        serializer.Deserialize(&VMTProject::GetInstance());
+        throw std::logic_error("Legacy .jdtp format support was dropped");
     }
     VMTProject::GetInstance().GetUndoManager()->Clear();
 
@@ -168,7 +167,6 @@ void FormExercises::on__open_clicked() {
     dlg.setViewMode(QFileDialog::List);
     QStringList filters;
     filters << "Any files (*)"
-            << "Turing machine files (*.jdtp)"
             << "JSON projects (*.vmt.json *.json)";
     dlg.setOption(QFileDialog::HideNameFilterDetails, false);
     dlg.setNameFilters(filters);

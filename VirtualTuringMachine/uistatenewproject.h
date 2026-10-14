@@ -2,6 +2,7 @@
 #define UISTATENEWPROJECT_H
 #include <QMessageBox>
 
+#include "VMTJsonSerializer.h"
 #include "configuration.h"
 #include "formnewproject.h"
 #include "uistateeditormachine.h"
@@ -41,8 +42,8 @@ class UIStateNewProject : public UIStateStub<FormNewProject> {
         if (name == QString("button_save")) {
             QString name;
             GetProjectFileName(name);
-            VMTSerializer serializer(name);
-            serializer.Serialize(&VMTProject::GetInstance());
+            VMTJsonSerializer serializer(name);
+            serializer.serialize(&VMTProject::GetInstance());
 
             Configuration::GetInstance().AddRecentProject(name);
             Configuration::GetInstance().Save();
@@ -59,7 +60,7 @@ class UIStateNewProject : public UIStateStub<FormNewProject> {
         name = VMTProject::GetInstance().GetLocation();
         name += "/";
         name += VMTProject::GetInstance().GetName();
-        if (!name.endsWith(".jdtp", Qt::CaseInsensitive)) name += ".jdtp";
+        name += ".vmt.json";
     }
 };
 

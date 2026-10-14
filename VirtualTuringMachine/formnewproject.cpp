@@ -52,36 +52,7 @@ FormNewProject::FormNewProject(QWidget* parent)
     st.ResizeButtonBig(ui->button_z80);
 
     st.ResizeButtonBig(ui->button_create);
-
-    auto* extras = new QVBoxLayout();
-    auto* saveJson = new QPushButton(tr("Save as JSON…"), this);
-    saveJson->setStyleSheet(VmtTheme::primaryButtonStyle());
-    connect(saveJson, &QPushButton::clicked, this,
-            &FormNewProject::on_save_json_clicked);
-    extras->addWidget(saveJson);
-
-    ui->verticalLayout_2->addLayout(extras);
-
     Check();
-}
-
-void FormNewProject::on_save_json_clicked() {
-    Save();
-    QString path = VMTProject::GetInstance().GetLocation();
-    path += QLatin1Char('/');
-    path += VMTProject::GetInstance().GetName();
-    if (!path.endsWith(QLatin1String(".json"), Qt::CaseInsensitive)) {
-        path += QLatin1String(".vmt.json");
-    }
-    path =
-        QFileDialog::getSaveFileName(this, tr("Save JSON project"), path,
-                                     tr("JSON projects (*.vmt.json *.json)"));
-    if (path.isEmpty()) return;
-    VMTJsonSerializer json(path);
-    if (json.serialize(&VMTProject::GetInstance())) {
-        Configuration::GetInstance().AddRecentProject(path);
-        Configuration::GetInstance().Save();
-    }
 }
 
 void FormNewProject::Save() {

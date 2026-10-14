@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QScreen>
 #include <QUrl>
+#include <stdexcept>
 
 #include "VMTJsonSerializer.h"
 #include "configuration.h"
@@ -89,9 +90,7 @@ bool FormMain::OpenProject(QString& file) {
         VMTJsonSerializer json(file);
         ok = json.deserialize(&VMTProject::GetInstance());
     } else {
-        VMTSerializer serializer(file);
-        serializer.Deserialize(&VMTProject::GetInstance());
-        ok = true;
+        throw std::logic_error("Legacy .jdtp format support was dropped");
     }
     if (!ok) return false;
     VMTProject::GetInstance().GetUndoManager()->Clear();
@@ -134,7 +133,6 @@ void FormMain::on_button_open_clicked() {
     dlg.setViewMode(QFileDialog::List);
     QStringList filters;
     filters << "Any files (*)"
-            << "Turing machine files (*.jdtp)"
             << "JSON projects (*.vmt.json *.json)";
     dlg.setOption(QFileDialog::HideNameFilterDetails, false);
     dlg.setNameFilters(filters);

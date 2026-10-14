@@ -1,7 +1,6 @@
 #ifndef VMTPROJECT_H
 #define VMTPROJECT_H
 
-#include <VMTSerializer.h>
 #include <vmtmachines/VMTComplexMachine.h>
 
 #include <QString>
@@ -10,7 +9,6 @@
 
 #include "VMTAlphabit.h"
 #include "exercise.h"
-#include "vmtproject.h"
 class UIStateData;
 
 class VMTProject {

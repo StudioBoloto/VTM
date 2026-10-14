@@ -7,5 +7,6 @@
     wrapQtAppsHook
     qtsvg
     qtimageformats
+    qtcreator
   ];
 }

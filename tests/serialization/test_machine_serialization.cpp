@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "VMTSerializer.h"
+#include "VMTJsonSerializer.h"
 #include "interfaces/IVMTEnvironment.h"
 #include "interfaces/IVMTMachine.h"
 #include "interfaces/IVMTTransition.h"
@@ -161,17 +161,17 @@ std::shared_ptr<VMTComplexMachine> buildSampleDiagram() {
 }
 
 QString saveProjectToTempFile(QTemporaryDir& tempDir) {
-    QString path = tempDir.filePath(QStringLiteral("diagram.jdtp"));
-    VMTSerializer serializer(path);
-    serializer.Serialize(&VMTProject::GetInstance());
+    QString path = tempDir.filePath(QStringLiteral("diagram.vmt.json"));
+    VMTJsonSerializer serializer(path);
+    serializer.serialize(&VMTProject::GetInstance());
     return path;
 }
 
 void loadProjectFromFile(QString path) {
     VMTProject& project = VMTProject::GetInstance();
     project.GetMachines().clear();
-    VMTSerializer serializer(path);
-    serializer.Deserialize(&project);
+    VMTJsonSerializer serializer(path);
+    serializer.deserialize(&project);
 }
 
 }  // namespace

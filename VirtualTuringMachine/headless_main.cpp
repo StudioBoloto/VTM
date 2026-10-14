@@ -4,7 +4,6 @@
 #include <QTextStream>
 
 #include "VMTJsonSerializer.h"
-#include "VMTSerializer.h"
 #include "vmtdebuger.h"
 #include "vmtproject.h"
 
@@ -53,10 +52,7 @@ bool run(const QString& path, const QString& machineName, const QString& input,
     if (VMTJsonSerializer::isJsonPath(path)) {
         loaded = VMTJsonSerializer(path).deserialize(&project);
     } else {
-        QString mutablePath = path;
-        VMTSerializer serializer(mutablePath);
-        serializer.Deserialize(&project);
-        loaded = !project.GetMachines().empty();
+        throw std::logic_error("Legacy .jdtp format support was dropped");
     }
     if (!loaded) {
         error = QStringLiteral("cannot load diagram: ") + path;

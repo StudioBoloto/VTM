@@ -5,7 +5,6 @@
 #include <QRect>
 #include <vector>
 
-#include "VMTSerializer.h"
 #include "VMTTransitionConditions.h"
 #include "interfaces/IVMTMachine.h"
 #include "interfaces/IVMTTransition.h"

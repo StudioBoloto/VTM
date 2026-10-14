@@ -15,6 +15,10 @@ class VMTJsonSerializer {
     bool serialize(VMTProject* project) const;
     bool deserialize(VMTProject* project) const;
 
+    static QByteArray serializeInMemory(VMTProject* project);
+    static bool deserializeFromMemory(VMTProject* project,
+                                      QByteArray serialized_project);
+
     static bool isJsonPath(const QString& path);
 };
 

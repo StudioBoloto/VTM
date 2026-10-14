@@ -1,20 +1,19 @@
 #include "vmtundoelementmachine.h"
 
+#include <qstringview.h>
+
 #include <QDebug>
 
-#include "VMTSerializer.h"
+#include "VMTJsonSerializer.h"
 #include "vmtproject.h"
 
 VMTUndoElementMachine::VMTUndoElementMachine() {
-    QBuffer buffer(&_array);
-    VMTSerializer serializer(VMTProject::GetInstance().GetName());
-    serializer.Serialize(&VMTProject::GetInstance(), buffer);
+    _array = VMTJsonSerializer::serializeInMemory(&VMTProject::GetInstance());
 }
 
 void VMTUndoElementMachine::Undo(IVMTEnvironment*) {
-    QBuffer buffer(&_array);
-    VMTSerializer serializer(VMTProject::GetInstance().GetName());
-    serializer.Deserialize(&VMTProject::GetInstance(), buffer);
+    VMTJsonSerializer::deserializeFromMemory(&VMTProject::GetInstance(),
+                                             _array);
 }
 
 VMTUndoElementMachine::~VMTUndoElementMachine() {}
