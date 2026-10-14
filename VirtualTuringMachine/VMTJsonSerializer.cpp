@@ -241,52 +241,50 @@ std::optional<QByteArray> PackProjectToJson(VMTProject* project,
 
     const auto registerInner =
         [&](const std::shared_ptr<VMTComplexMachineInner>& inner,
-            const QString& defaultName) -> QString {
-        if (!inner) return QString();
+            const QString& defaultName) -> bool {
+        if (!inner) return false;
         if (!innerIds.contains(inner)) {
             innerIds.insert(inner, newId());
             innerNames.insert(inner, defaultName);
+            return true;
         }
-        return innerIds.value(inner);
+        return false;
     };
 
     std::function<void(const std::shared_ptr<VMTComplexMachineInner>&,
                        const QString&)>
-        scanInner;
-    scanInner = [&](const std::shared_ptr<VMTComplexMachineInner>& inner,
-                    const QString& defaultName) {
-        if (!inner) return;
-        registerInner(inner, defaultName);
-        for (const auto& m : inner->GetMachineCollection()) {
-            if (!m || m->GetID() != IVMTMachine::MT_COMPLEX) continue;
-            const auto cm = std::dynamic_pointer_cast<VMTComplexMachine>(m);
-            if (cm && cm->GetInnerObject()) {
-                scanInner(cm->GetInnerObject(), cm->GetName());
+        scanInner = [&](const std::shared_ptr<VMTComplexMachineInner>& inner,
+                        const QString& defaultName) {
+            if (!inner || !registerInner(inner, defaultName)) return;
+            for (const auto& m : inner->GetMachineCollection()) {
+                if (!m || m->GetID() != IVMTMachine::MT_COMPLEX) continue;
+                const auto cm = std::dynamic_pointer_cast<VMTComplexMachine>(m);
+                if (cm && cm->GetInnerObject()) {
+                    scanInner(cm->GetInnerObject(), cm->GetName());
+                }
             }
-        }
-    };
+        };
 
     QSet<VMTComplexMachineInner*> exported;
     std::function<void(const std::shared_ptr<VMTComplexMachineInner>&,
                        const QString&)>
-        emitBody;
-    emitBody = [&](const std::shared_ptr<VMTComplexMachineInner>& inner,
-                   const QString& defaultName) {
-        if (!inner || exported.contains(inner.get())) return;
-        exported.insert(inner.get());
-        const QString bodyId = innerIds.value(inner);
-        const QString bodyName = innerNames.value(inner, defaultName);
-        bodiesArr.append(bodyToJson(bodyId, bodyName, inner.get(),
-                                    project->GetAlphabit(), machineIds,
-                                    innerIds));
-        for (const auto& m : inner->GetMachineCollection()) {
-            if (!m || m->GetID() != IVMTMachine::MT_COMPLEX) continue;
-            const auto cm = std::dynamic_pointer_cast<VMTComplexMachine>(m);
-            if (cm && cm->GetInnerObject()) {
-                emitBody(cm->GetInnerObject(), cm->GetName());
+        emitBody = [&](const std::shared_ptr<VMTComplexMachineInner>& inner,
+                       const QString& defaultName) {
+            if (!inner || exported.contains(inner.get())) return;
+            exported.insert(inner.get());
+            const QString bodyId = innerIds.value(inner);
+            const QString bodyName = innerNames.value(inner, defaultName);
+            bodiesArr.append(bodyToJson(bodyId, bodyName, inner.get(),
+                                        project->GetAlphabit(), machineIds,
+                                        innerIds));
+            for (const auto& m : inner->GetMachineCollection()) {
+                if (!m || m->GetID() != IVMTMachine::MT_COMPLEX) continue;
+                const auto cm = std::dynamic_pointer_cast<VMTComplexMachine>(m);
+                if (cm && cm->GetInnerObject()) {
+                    emitBody(cm->GetInnerObject(), cm->GetName());
+                }
             }
-        }
-    };
+        };
 
     for (const auto& top : project->GetMachines()) {
         if (!top) continue;
