@@ -1,5 +1,7 @@
 #include "formeditormachine.h"
 
+#include <qlogging.h>
+
 #include <QFile>
 #include <QFileDialog>
 #include <QImage>
@@ -301,14 +303,6 @@ FormEditorMachine::~FormEditorMachine() { delete ui; }
 
 void FormEditorMachine::ChangeZoom(size_t zoom) {
     ui->widget_editor->SetZoom(zoom);
-}
-
-void FormEditorMachine::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Escape) {
-        SetAction(std::shared_ptr<IVMTAction>(
-            new VMTActionPointer(this, ui->_navi->isChecked())));
-        ui->tool_pointer->setChecked(true);
-    }
 }
 
 // IVMTEnvironment

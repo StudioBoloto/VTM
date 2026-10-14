@@ -65,9 +65,6 @@ class FormEditorMachine : public QWidget,
 
     void SetAction(std::shared_ptr<IVMTAction> action) override;
 
-   protected:
-    void keyPressEvent(QKeyEvent* event) override;
-
    private slots:
     void on_tool_pointer_clicked();
 

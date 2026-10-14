@@ -27,9 +27,6 @@ class ScreenTools : public QObject {
     void ResizeButton(QToolButton* btn);
     void ResizeButtonBig(QToolButton* btn);
     void ResizeButton(QPushButton* btn);
-    // void ResizeLabel(QLabel *label);
-    // void ResizeSlider(QSlider *sld);
-    // void ResizeFrame(QFrame *frame);
     void ResizePropertyPanel(QFrame* frame);
     const QSize& GetImageSize();
     const QSize& GetCellSize();
