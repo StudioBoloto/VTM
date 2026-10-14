@@ -9,6 +9,8 @@
 #include <deque>
 #include <vector>
 
+#include "VMTJsonSerializer.h"
+#include "uistatenewproject.h"
 #include "vmtproject.h"
 
 class StateController {
@@ -67,6 +69,19 @@ class StateController {
             VMTProject::GetInstance().GetUndoManager()->SetObserver(nullptr);
             if (_state_data->IsNeedWarning()) {
                 warning = true;
+                QString file_path;
+                UIStateNewProject::GetProjectFileName(file_path);
+                VMTJsonSerializer serializer{file_path};
+                auto& project = VMTProject::GetInstance();
+                if (!project.GetMachines().empty() &&
+                    serializer.serialize(&project)) {
+                    Configuration::GetInstance().AddRecentProject(file_path);
+                    Configuration::GetInstance().Save();
+                    QMessageBox box;
+                    box.setText("Project saved");
+                    box.exec();
+                    warning = false;
+                }
 
                 QMessageBox::StandardButton resBtn = QMessageBox::question(
                     nullptr, "VMT",
