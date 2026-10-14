@@ -2,7 +2,6 @@
 
 #include <qlogging.h>
 #include <qnamespace.h>
-#include <qobject.h>
 
 #include <QApplication>
 #include <QHBoxLayout>
@@ -11,15 +10,13 @@
 #include <QToolButton>
 #include <QWidget>
 
-#include "VMTJsonSerializer.h"
 #include "clickablelabel.h"
 #include "configuration.h"
 #include "formwarning.h"
 #include "screentools.h"
 #include "ui_mainwindow.h"
 #include "uistatemain.h"
-#include "uistatenewproject.h"
-#include "vmtproject.h"
+#include "utils/ui.h"
 #include "vmttheme.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -159,19 +156,8 @@ void MainWindow::Enable4thExport(bool enable) {
 
 #include <QMessageBox>
 void MainWindow::closeEvent(QCloseEvent* event) {
-    QString file_path;
-    UIStateNewProject::GetProjectFileName(file_path);
-    VMTJsonSerializer serializer{file_path};
-    auto& project = VMTProject::GetInstance();
-    if (!project.GetMachines().empty() && serializer.serialize(&project)) {
-        event->accept();
-        Configuration::GetInstance().AddRecentProject(file_path);
-        Configuration::GetInstance().Save();
-        QMessageBox box;
-        box.setText("Project saved");
-        box.exec();
-        return;
-    }
+    utils::ui::SerializeWithPromptIfNeeded();
+    event->accept();
 }
 
 void MainWindow::ShowWarning(std::shared_ptr<UIStateData>) {

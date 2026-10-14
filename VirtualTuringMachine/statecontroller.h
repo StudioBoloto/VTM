@@ -9,8 +9,7 @@
 #include <deque>
 #include <vector>
 
-#include "VMTJsonSerializer.h"
-#include "uistatenewproject.h"
+#include "utils/ui.h"
 #include "vmtproject.h"
 
 class StateController {
@@ -69,33 +68,9 @@ class StateController {
             VMTProject::GetInstance().GetUndoManager()->SetObserver(nullptr);
             if (_state_data->IsNeedWarning()) {
                 warning = true;
-                QString file_path;
-                UIStateNewProject::GetProjectFileName(file_path);
-                VMTJsonSerializer serializer{file_path};
-                auto& project = VMTProject::GetInstance();
-                if (!project.GetMachines().empty() &&
-                    serializer.serialize(&project)) {
-                    Configuration::GetInstance().AddRecentProject(file_path);
-                    Configuration::GetInstance().Save();
-                    QMessageBox box;
-                    box.setText("Project saved");
-                    box.exec();
+                if (utils::ui::SerializeWithPromptIfNeeded()) {
                     warning = false;
                 }
-
-                QMessageBox::StandardButton resBtn = QMessageBox::question(
-                    nullptr, "VMT",
-                    "This will delete any unsaved project data. Are you sure?",
-                    QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
-                if (resBtn != QMessageBox::Yes) {
-                    return false;
-                    // event->ignore();
-                } else {
-                    warning = false;
-                    // event->accept();
-                }
-
-                // ShowWarning(state_data);
             }
         }
 
