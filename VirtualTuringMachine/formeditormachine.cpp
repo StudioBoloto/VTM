@@ -143,21 +143,94 @@ void FormEditorMachine::OnKeyPressed(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
         this->SetAction(std::shared_ptr<IVMTAction>(
             new VMTActionPointer(this, ui->_navi->isChecked())));
-    } else if (event->key() == Qt::Key_Space) {
-        if (!_action_space) {
-            _action_space = ui->widget_editor->GetAction();
-            SetAction(
-                std::shared_ptr<IVMTAction>(new VMTActionTranslate(this)));
-        }
     }
 }
 
 void FormEditorMachine::OnKeyReleased(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Space) {
-        if (_action_space) {
-            SetAction(std::shared_ptr<IVMTAction>(_action_space));
-            _action_space = nullptr;
-        }
+    switch (event->key()) {
+        case Qt::Key_Escape:
+        case Qt::Key_1:
+            SetAction(std::shared_ptr<IVMTAction>(
+                new VMTActionPointer(this, ui->_navi->isChecked())));
+            return ui->tool_pointer->setChecked(true);
+        case Qt::Key_2:
+            SetAction(
+                std::shared_ptr<IVMTAction>(new VMTActionTranslate(this)));
+            return ui->tool_translate->setChecked(true);
+        case Qt::Key_3:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionLink(this)));
+            return ui->tool_link->setChecked(true);
+        case Qt::Key_4:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionDelete(this)));
+            return ui->tool_trash->setChecked(true);
+        case Qt::Key_Y:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_START, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_start->setChecked(true);
+        case Qt::Key_U:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_LEFT, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_left->setChecked(true);
+        case Qt::Key_I:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_LEFT_WORD, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_left_word->setChecked(true);
+        case Qt::Key_O:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_COPY, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_copy->setChecked(true);
+        case Qt::Key_H:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_FINISH, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_finish->setChecked(true);
+        case Qt::Key_J:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_RIGHT, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_right->setChecked(true);
+        case Qt::Key_K:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_RIGHT_WORD,
+                    this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_right_word->setChecked(true);
+        case Qt::Key_L:
+            SetAction(std::shared_ptr<IVMTAction>(new VMTActionMachine(
+                this,
+                VMTMachineStub::CreateMachineByID(
+                    IVMTMachine::MachineType::MT_WRITE, this->GetMachine()),
+                ui->_navi->isChecked())));
+            return ui->tool_machine_lambda->setChecked(true);
+        case Qt::Key_V:
+            SetAction(
+                std::shared_ptr<IVMTAction>(new VMTActionTranslate(this)));
+            return EnableFormComplexMachines();
+        case Qt::Key_B:
+            ui->_navi->setChecked(!ui->_navi->isChecked());
+            if (ui->_navi->isChecked()) {
+                SetAction(std::shared_ptr<IVMTAction>(
+                    new VMTActionPointer(this, ui->_navi->isChecked())));
+            }
+            return;
     }
 }
 

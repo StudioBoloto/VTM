@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 
+#include <qlogging.h>
+#include <qnamespace.h>
+
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -179,6 +182,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Control) {
         qDebug() << "CTRL released";
         ctrlPressed = false;
+    }
+    if (event->key() == Qt::Key_Space) {
+        qDebug() << "TODO(Tias): inspect how space traverse to undo manager "
+                    "and clear it\n";
+        return;
     }
     if (_state) {
         _state->OnKeyReleased(event);

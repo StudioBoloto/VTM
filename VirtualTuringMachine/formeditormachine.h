@@ -101,7 +101,6 @@ class FormEditorMachine : public QWidget,
     FormCalculator* _form_calculator;
     FormComplexMachines* _form_complex_machines;
     FormActionHint* _form_action_hint;
-    std::shared_ptr<IVMTAction> _action_space;
     bool _deferTransitionRouting = false;
 };
 
