@@ -166,7 +166,7 @@ void MainWindow::ShowWarning(std::shared_ptr<UIStateData>) {
     if (!_form_warning) {
         if (GetContainer()->layout()->count() > 0) {
             //_form_warning_state =
-            //dynamic_cast<QWidget*>(GetContainer()->layout()->children().at(0));
+            // dynamic_cast<QWidget*>(GetContainer()->layout()->children().at(0));
             //_form_warning_state->setHidden(true);
             _form_warning = new FormWarning(this, GetContainer());
             GetContainer()->layout()->addWidget(_form_warning);

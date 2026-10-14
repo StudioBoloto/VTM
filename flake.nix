@@ -10,6 +10,15 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs:
@@ -25,6 +34,14 @@
         packages = {
           VTM = pkgs.qt6.callPackage ./default.nix {};
           default = self'.packages.VTM;
+        };
+        devShells = {
+          default = inputs.devenv.lib.mkShell {
+            inherit inputs pkgs;
+            modules = [
+              (import inputs.import-tree ./devenv)
+            ];
+          };
         };
         treefmt = import ./treefmt.nix;
       };

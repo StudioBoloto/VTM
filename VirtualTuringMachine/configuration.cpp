@@ -17,7 +17,8 @@ QString configurationFilePath() {
         directory = QDir::homePath();
     }
     QDir().mkpath(directory);
-    qDebug() << "Config path: " << QDir(directory).filePath(QStringLiteral("config.xml")) << '\n';
+    qDebug() << "Config path: "
+             << QDir(directory).filePath(QStringLiteral("config.xml")) << '\n';
     return QDir(directory).filePath(QStringLiteral("config.xml"));
 }
 }  // namespace

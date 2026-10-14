@@ -74,3 +74,7 @@ pnpm-debug.log*
 .cache/
 compile_commands.json
 result
+result
+.pre-commit-config.yaml
+.devenv
+.direnv

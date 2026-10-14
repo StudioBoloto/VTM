@@ -1,6 +1,6 @@
+#include <QByteArray>
 #include <QCommandLineParser>
 #include <QGuiApplication>
-#include <QByteArray>
 #include <QTextStream>
 
 #include "VMTJsonSerializer.h"
@@ -15,7 +15,8 @@ class HeadlessEnvironment final : public IVMTEnvironment {
     void DisableActionHint() override {}
     void DisableAlphabit() override {}
     void DisableCalculator() override {}
-    void EnableAlphabit(IVMTAlphabitSource*, const QString&, QPixmap&) override {}
+    void EnableAlphabit(IVMTAlphabitSource*, const QString&,
+                        QPixmap&) override {}
     void EnableCalculator(std::shared_ptr<IVMTMachine>) override {}
     UICanvas& GetGraphics() override { return _canvas; }
     std::weak_ptr<VMTComplexMachine> GetMachine() override { return _machine; }
@@ -45,8 +46,8 @@ QString outputWord(const std::shared_ptr<VMTLine>& line) {
     return result;
 }
 
-bool run(const QString& path, const QString& machineName,
-         const QString& input, int maxSteps, QString& output, QString& error) {
+bool run(const QString& path, const QString& machineName, const QString& input,
+         int maxSteps, QString& output, QString& error) {
     VMTProject& project = VMTProject::GetInstance();
     bool loaded = false;
     if (VMTJsonSerializer::isJsonPath(path)) {
@@ -82,13 +83,15 @@ bool run(const QString& path, const QString& machineName,
         }
     }
     if (!hasStart) {
-        error = QStringLiteral("machine has no start state: ") + machine->GetName();
+        error =
+            QStringLiteral("machine has no start state: ") + machine->GetName();
         return false;
     }
 
     VMTDebuger debugger(project.GetAlphabit(), machine);
     for (long position = 0; position < input.size(); ++position) {
-        debugger.GetLine()->SetValueAt(position + 1, input[position].toLatin1());
+        debugger.GetLine()->SetValueAt(position + 1,
+                                       input[position].toLatin1());
     }
     debugger.GetLine()->SetMachinePosition(input.size() + 1);
 
@@ -98,11 +101,14 @@ bool run(const QString& path, const QString& machineName,
     while (!debugger.IsFinish() && steps < maxSteps) {
         debugger.Step(&environment);
 
-        QTextStream(stderr) << debugger.GetLine()->GetMachinePosition() << " | " << debugger.GetLine()->ToString() << Qt::endl;
-        if(debugger.GetLine()->GetMachinePosition() < 0) {
-            error = QStringLiteral("Machine working cell out of left line border (< 0). Which is forbidden");
+        QTextStream(stderr) << debugger.GetLine()->GetMachinePosition() << " | "
+                            << debugger.GetLine()->ToString() << Qt::endl;
+        if (debugger.GetLine()->GetMachinePosition() < 0) {
+            error = QStringLiteral(
+                "Machine working cell out of left line border (< 0). Which is "
+                "forbidden");
             return false;
-        } 
+        }
         ++steps;
     }
     if (!debugger.IsFinish()) {
@@ -128,37 +134,39 @@ int main(int argc, char* argv[]) {
         QStringLiteral("Execute a Virtual Turing Machine diagram."));
     parser.addHelpOption();
     parser.addVersionOption();
-    QCommandLineOption diagramOption({QStringLiteral("d"), QStringLiteral("diagram")},
-                                     QStringLiteral(
-                                         "Diagram file (.vmt or .vmt.json)."),
-                                     QStringLiteral("file"));
-    QCommandLineOption machineOption({QStringLiteral("m"), QStringLiteral("machine")},
-                                     QStringLiteral(
-                                         "Machine name (defaults to the first one)."),
-                                     QStringLiteral("name"));
-    QCommandLineOption inputOption({QStringLiteral("i"), QStringLiteral("input")},
-                                   QStringLiteral("Input tape word (may be repeated)."),
-                                   QStringLiteral("word"));
-    QCommandLineOption maxStepsOption(QStringLiteral("max-steps"),
-                                      QStringLiteral("Maximum execution steps."),
-                                      QStringLiteral("count"),
-                                      QStringLiteral("1000000"));
+    QCommandLineOption diagramOption(
+        {QStringLiteral("d"), QStringLiteral("diagram")},
+        QStringLiteral("Diagram file (.vmt or .vmt.json)."),
+        QStringLiteral("file"));
+    QCommandLineOption machineOption(
+        {QStringLiteral("m"), QStringLiteral("machine")},
+        QStringLiteral("Machine name (defaults to the first one)."),
+        QStringLiteral("name"));
+    QCommandLineOption inputOption(
+        {QStringLiteral("i"), QStringLiteral("input")},
+        QStringLiteral("Input tape word (may be repeated)."),
+        QStringLiteral("word"));
+    QCommandLineOption maxStepsOption(
+        QStringLiteral("max-steps"), QStringLiteral("Maximum execution steps."),
+        QStringLiteral("count"), QStringLiteral("1000000"));
     parser.addOption(diagramOption);
     parser.addOption(machineOption);
     parser.addOption(inputOption);
     parser.addOption(maxStepsOption);
     parser.addPositionalArgument(QStringLiteral("word"),
-                                  QStringLiteral("Input tape word."));
+                                 QStringLiteral("Input tape word."));
     parser.process(app);
     const QString path = parser.value(diagramOption);
     if (path.isEmpty()) {
-        QTextStream(stderr) << "A diagram file is required (--diagram)." << Qt::endl;
+        QTextStream(stderr)
+            << "A diagram file is required (--diagram)." << Qt::endl;
         return 2;
     }
     bool ok = false;
     const int maxSteps = parser.value(maxStepsOption).toInt(&ok);
     if (!ok || maxSteps <= 0) {
-        QTextStream(stderr) << "--max-steps must be a positive integer." << Qt::endl;
+        QTextStream(stderr)
+            << "--max-steps must be a positive integer." << Qt::endl;
         return 2;
     }
 
