@@ -246,6 +246,9 @@ void VMTTransitionImpl::Drag([[maybe_unused]] IVMTEnvironment* environment,
 
                 double a = current.y() - prev.y();
                 double b = current.x() - prev.x();
+                if (a * a + b * b == 0) {
+                    a = b = 0.1;
+                }
                 double dK =
                     (a * (point.y() - prev.y()) + b * (point.x() - prev.x())) /
                     (a * a + b * b);
