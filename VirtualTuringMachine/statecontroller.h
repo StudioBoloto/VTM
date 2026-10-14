@@ -9,6 +9,7 @@
 #include <deque>
 #include <vector>
 
+#include "utils/ui.h"
 #include "vmtproject.h"
 
 class StateController {
@@ -67,20 +68,9 @@ class StateController {
             VMTProject::GetInstance().GetUndoManager()->SetObserver(nullptr);
             if (_state_data->IsNeedWarning()) {
                 warning = true;
-
-                QMessageBox::StandardButton resBtn = QMessageBox::question(
-                    nullptr, "VMT",
-                    "This will delete any unsaved project data. Are you sure?",
-                    QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
-                if (resBtn != QMessageBox::Yes) {
-                    return false;
-                    // event->ignore();
-                } else {
+                if (utils::ui::SerializeWithPromptIfNeeded()) {
                     warning = false;
-                    // event->accept();
                 }
-
-                // ShowWarning(state_data);
             }
         }
 

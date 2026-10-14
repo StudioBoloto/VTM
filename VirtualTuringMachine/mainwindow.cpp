@@ -16,6 +16,7 @@
 #include "screentools.h"
 #include "ui_mainwindow.h"
 #include "uistatemain.h"
+#include "utils/ui.h"
 #include "vmttheme.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -155,14 +156,8 @@ void MainWindow::Enable4thExport(bool enable) {
 
 #include <QMessageBox>
 void MainWindow::closeEvent(QCloseEvent* event) {
-    QMessageBox::StandardButton resBtn = QMessageBox::question(
-        this, "VMT", "This will delete any unsaved project data. Are you sure?",
-        QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
-    if (resBtn != QMessageBox::Yes) {
-        event->ignore();
-    } else {
-        event->accept();
-    }
+    utils::ui::SerializeWithPromptIfNeeded();
+    event->accept();
 }
 
 void MainWindow::ShowWarning(std::shared_ptr<UIStateData>) {
