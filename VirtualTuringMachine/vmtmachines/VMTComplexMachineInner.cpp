@@ -49,17 +49,10 @@ VMTComplexMachineInner::GetTransitionCollection() {
 void VMTComplexMachineInner::PaintDiagramm(UICanvas& canvas, QRect rect,
                                            [[maybe_unused]] bool all) {
     for (std::shared_ptr<IVMTMachine> m : _machines) {
-        if (!rect.isEmpty() && !rect.intersects(m->GetBounds())) {
-            continue;
-        }
         m->Paint(canvas, rect);
     }
     for (std::shared_ptr<IVMTTransition> t : _transitions) {
         const QRect& transitionBounds = t->GetBounds();
-        if (!rect.isEmpty() && !transitionBounds.isEmpty() &&
-            !rect.intersects(transitionBounds)) {
-            continue;
-        }
         t->Paint(canvas, rect);
     }
 }

@@ -328,17 +328,11 @@ void VMTMachineStub::Move(const QPoint&& center, IVMTEnvironment* environment) {
 }
 
 void VMTMachineStub::Paint(UICanvas& canvas, const QRect& rect) {
-    if (!rect.isEmpty() && !rect.intersects(_bounds)) {
-        return;
-    }
-
     if (this->_selected || this->_error) {
         if (_selected) {
             canvas.DrawRectAnimation(_bounds, _selected);
         } else
             canvas.DrawRect(_bounds, _selected, _error);
-    } else {
-        // canvas.DrawButton(_bounds);
     }
 
     if (_power > 1) {
@@ -347,7 +341,6 @@ void VMTMachineStub::Paint(UICanvas& canvas, const QRect& rect) {
         rect.setLeft(rect.left() + rect.width());
         rect.setWidth(rect.height() / 2);
         rect.setHeight(rect.height() / 2);
-        // canvas.DrawText(str, rect, false);
 
         canvas.DrawText(str, rect.center(), rect.height(), false);
     }

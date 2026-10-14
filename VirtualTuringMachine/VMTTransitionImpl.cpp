@@ -4,7 +4,9 @@
 #include <cmath>
 
 #include "diagrambezier.h"
+#include "utils/ui.h"
 #include "vmtmachines/VMTComplexMachine.h"
+
 #define PRECISION 5
 
 namespace {
@@ -481,10 +483,6 @@ bool VMTTransitionImpl::IsInsideLine(const QPoint& prev, const QPoint& current,
 }
 
 void VMTTransitionImpl::Paint(UICanvas& canvas, const QRect& rect) {
-    if (!rect.isEmpty() && !_bounds.isEmpty() && !rect.intersects(_bounds)) {
-        return;
-    }
-
     const QPainterPath connectorPath =
         DiagramBezier::buildConnectorPath(_points);
     if (!connectorPath.isEmpty()) {
@@ -498,7 +496,7 @@ void VMTTransitionImpl::Paint(UICanvas& canvas, const QRect& rect) {
     if (!_conditions.IsAllEnabled()) {
         if (_conditions.GetAsString().length() > 0) {
             QRect rect = GetConditionRectangle(canvas);
-            QString text = _conditions.GetAsString();
+            QString text = utils::ui::escapeString(_conditions.GetAsString());
             canvas.FillRect(rect, this->_highlighted);
             // canvas.DrawRectAnimation(_bounds,true);
             canvas.DrawText(text, _conditions_point, _condition_width / 2,

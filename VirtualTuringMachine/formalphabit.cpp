@@ -5,6 +5,7 @@
 #include "interfaces/IVMTEnvironment.h"
 #include "screentools.h"
 #include "ui_formalphabit.h"
+#include "utils/ui.h"
 #include "vmttheme.h"
 
 FormAlphabit::FormAlphabit(IVMTAlphabitSource* alphabit_source,
@@ -16,14 +17,9 @@ FormAlphabit::FormAlphabit(IVMTAlphabitSource* alphabit_source,
     ui->setupUi(this);
     VmtTheme::polishWidgetTree(this);
 
-    //    QButtonGroup *_group = nullptr;
-    //    if(_alphabit_source->IsSingleChar())
-    //         _group = new QButtonGroup();
-
     if (!_alphabit_source->GetAlphabit())
         qDebug() << "FormAlphabit::FormAlphabit Oppps 2!";
     QString str = _alphabit_source->GetAlphabit()->ToString();
-    //_layout.setSpacing(10);
 
     ui->frame->setLayout(&_layout);
     ui->frame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -35,9 +31,8 @@ FormAlphabit::FormAlphabit(IVMTAlphabitSource* alphabit_source,
     const int count = qMin(static_cast<int>(str.size()), 256);
     for (int i = 0; i < count; ++i) {
         QToolButton* label = &_buttons[i];
-        // label->setFlat(true);
         label->setProperty("sign", QString(QChar(str[i])));
-        label->setText(QString(QChar(str[i])));
+        label->setText(QString(utils::ui::escapeChar(str[i])));
         label->setCheckable(true);
         label->setStyleSheet(style);
 

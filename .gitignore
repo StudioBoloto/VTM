@@ -78,3 +78,5 @@ result
 .pre-commit-config.yaml
 .devenv
 .direnv
+.gdb_history
+.qtcreator
