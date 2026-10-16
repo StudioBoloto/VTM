@@ -63,7 +63,7 @@ std::shared_ptr<VMTUndoElement> VMTLine::SetValueAt(size_t index, QChar sign) {
 
 std::shared_ptr<VMTUndoElement> VMTLine::ShiftLeft() {
     if (active_position_ == 0) {
-        throw std::out_of_range("Trying to go out of line's left border");
+        throw OutOfLeftBorderBoundException{};
     }
 
     return SetActivePosition(active_position_ - 1);

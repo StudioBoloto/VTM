@@ -1,5 +1,8 @@
 #include "formdebugermachine.h"
 
+#include <qerrormessage.h>
+
+#include "IVMTMachine.h"
 #include "configuration.h"
 #include "screentools.h"
 #include "ui_formdebugermachine.h"
@@ -214,7 +217,16 @@ void FormDebugerMachine::RunTimer() {
 
 void FormDebugerMachine::Stop() { _stop = true; }
 
-void FormDebugerMachine::Step() { _debugger.Step(this); }
+void FormDebugerMachine::Step() {
+    try {
+        _debugger.Step(this);
+    } catch (OutOfLeftBorderBoundException& e) {
+        QErrorMessage error_message;
+        error_message.showMessage("Trying to go out of left line's border!");
+        error_message.exec();
+        Stop();
+    }
+}
 
 void FormDebugerMachine::on_button_left_page_clicked() {
     ui->widget_line->LeftPage();

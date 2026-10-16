@@ -1,3 +1,4 @@
+#include <exception>
 #if !defined(EA_0A644956_9080_4fc2_B4F8_CA6F597178CE__INCLUDED_)
 #define EA_0A644956_9080_4fc2_B4F8_CA6F597178CE__INCLUDED_
 
@@ -7,6 +8,13 @@
 #include "VMTAlphabit.h"
 #include "utils/events.h"
 #include "vmtundoelement.h"
+
+class OutOfLeftBorderBoundException : public std::exception {
+   public:
+    const char* what() const noexcept override {
+        return "Trying to go out of left line's border";
+    }
+};
 
 class VMTLine {
    public:
