@@ -5,45 +5,36 @@
 #include <vector>
 
 #include "VMTAlphabit.h"
-#include "interfaces/IVMTLineObserver.h"
+#include "utils/events.h"
 #include "vmtundoelement.h"
 
-#define SHIFT_STEP 10
 class VMTLine {
-   private:
-    std::shared_ptr<VMTAlphabit> _alphabit;
-    std::vector<char*> _array;
-    long _machine;
-    long _zero;
-    void CheckPosition(long index);
-
    public:
     VMTLine(std::shared_ptr<VMTAlphabit> alphabit);
 
-    void ChangeAlphabit(std::shared_ptr<VMTAlphabit> alphabit);
-    std::shared_ptr<VMTUndoElement> CopyCurrentWord();
+    std::shared_ptr<const VMTAlphabit> GetAlphabit() const;
+    size_t GetActivePosition() const;
+    QChar GetValueAt(size_t index) const;
+    QChar GetValueAtActivePosition() const;
+    bool IsActivePosition(size_t index) const;
+    QString ToString() const;
 
-    std::shared_ptr<VMTAlphabit> GetAlphabit();
-    long GetMachinePosition();
-    long GetLeftSignPosition();
-    long GetRightSignPosition();
-
-    IVMTLineObserver* GetObserver();
-    void Clear();
-    char GetValueAt(long index);
-    char GetValueAtMachine();
-    bool IsEqualAlphabit(VMTAlphabit* alphabit);
-    bool IsMachinePosition(long index);
-    std::shared_ptr<VMTUndoElement> SetMachinePosition(long index);
-    void SetObserver(IVMTLineObserver* observer);
-    std::shared_ptr<VMTUndoElement> SetSignAtMachine(char sign);
-    std::shared_ptr<VMTUndoElement> SetValueAt(long index, char sign);
+    std::shared_ptr<VMTUndoElement> SetActivePosition(size_t index);
+    std::shared_ptr<VMTUndoElement> SetSignAtActivePosition(QChar sign);
+    std::shared_ptr<VMTUndoElement> SetValueAt(size_t index, QChar sign);
     std::shared_ptr<VMTUndoElement> ShiftLeft();
-    std::shared_ptr<VMTUndoElement> ShiftLeftWord();
     std::shared_ptr<VMTUndoElement> ShiftRight();
-    std::shared_ptr<VMTUndoElement> ShiftRightWord();
-    QString ToString();
+    void Clear();
 
     virtual ~VMTLine();
+
+    utils::IEvent<size_t>& onNewActivePositionEvent;
+
+   private:
+    std::shared_ptr<VMTAlphabit> alphabit_;
+    std::vector<QChar> array_;
+    size_t active_position_;
+
+    utils::Event<size_t> onNewActivePositionEvent_;
 };
 #endif  // !defined(EA_0A644956_9080_4fc2_B4F8_CA6F597178CE__INCLUDED_)

@@ -1,140 +1,86 @@
 #include "VMTLine.h"
 
-#include <cstddef>
+#include <format>
+#include <memory>
+#include <stdexcept>
+
+#include "VMTAlphabit.h"
 
 VMTLine::VMTLine(std::shared_ptr<VMTAlphabit> alphabit)
-    : _alphabit(alphabit), _machine(0), _zero(0) {}
+    : alphabit_(alphabit),
+      active_position_(0),
+      onNewActivePositionEvent(onNewActivePositionEvent_) {}
 
-void VMTLine::CheckPosition(long index) {
-    long array_index = (index - _zero) / SHIFT_STEP;
-    if (index < _zero) {
-        long new_zero = (index - SHIFT_STEP) / SHIFT_STEP * SHIFT_STEP;
-        long add = (_zero - new_zero) / SHIFT_STEP;
-        for (int i = 0; i < add; i++) {
-            char* ptr = new char[SHIFT_STEP];
-            for (int j = 0; j < SHIFT_STEP; j++)
-                ptr[j] = _alphabit->GetLambda();
-            _array.insert(_array.begin(), ptr);
-        }
-        _zero = new_zero;
-
-    } else if (array_index >= (long)_array.size()) {
-        long to_add = array_index - _array.size() + 1;
-        for (int i = 0; i < to_add; i++) {
-            char* ptr = new char[SHIFT_STEP];
-            for (int j = 0; j < SHIFT_STEP; j++)
-                ptr[j] = _alphabit->GetLambda();
-            _array.push_back(ptr);
-        }
-    }
+std::shared_ptr<const VMTAlphabit> VMTLine::GetAlphabit() const {
+    return alphabit_;
 }
 
-void VMTLine::ChangeAlphabit(
-    [[maybe_unused]] std::shared_ptr<VMTAlphabit> alphabit) {}
+QChar VMTLine::GetValueAt(size_t index) const {
+    if (index >= array_.size()) {
+        return alphabit_->GetLambda();
+    }
+    return array_.at(index);
+}
 
-std::shared_ptr<VMTUndoElement> VMTLine::CopyCurrentWord() {
+size_t VMTLine::GetActivePosition() const { return active_position_; }
+QChar VMTLine::GetValueAtActivePosition() const {
+    return GetValueAt(GetActivePosition());
+}
+
+bool VMTLine::IsActivePosition(size_t index) const {
+    return active_position_ == index;
+}
+
+std::shared_ptr<VMTUndoElement> VMTLine::SetActivePosition(size_t index) {
+    active_position_ = index;
+    onNewActivePositionEvent_(std::forward<size_t>(index));
     return std::shared_ptr<VMTUndoElement>();
 }
 
-std::shared_ptr<VMTAlphabit> VMTLine::GetAlphabit() { return _alphabit; }
+std::shared_ptr<VMTUndoElement> VMTLine::SetSignAtActivePosition(QChar sign) {
+    return SetValueAt(active_position_, sign);
+}
 
-long VMTLine::GetMachinePosition() { return _machine; }
-
-long VMTLine::GetRightSignPosition() {
-    for (ptrdiff_t i = static_cast<ptrdiff_t>(_array.size()) - 1; i >= 0; --i) {
-        for (int j = SHIFT_STEP - 1; j >= 0; j--) {
-            if (_array[i][j] != _alphabit->GetLambda())
-                return i * SHIFT_STEP + j + _zero;
-        }
+std::shared_ptr<VMTUndoElement> VMTLine::SetValueAt(size_t index, QChar sign) {
+    if (!alphabit_->Contains(sign)) {
+        // TODO(Tias) add custom exception for sign not in alphabit
+        throw std::logic_error("Trying set sign not from alphabit with code: " +
+                               std::to_string(sign.unicode()));
     }
-    return -1;
-}
-
-long VMTLine::GetLeftSignPosition() {
-    for (size_t i = 0; i < _array.size(); i++) {
-        for (size_t j = 0; j < SHIFT_STEP; j++) {
-            if (_array[i][j] != _alphabit->GetLambda())
-                return i * SHIFT_STEP + j + _zero;
-        }
+    constexpr size_t max_meaningfull_line_length = 10000;
+    if (index >= max_meaningfull_line_length) {
+        throw std::logic_error(std::format(
+            "Trying to set sign at position: {}, which is bigger than maxinum "
+            "meaningful line length: {}. There might be overflow in integer",
+            index, max_meaningfull_line_length));
     }
-    return -1;
-}
-
-IVMTLineObserver* VMTLine::GetObserver() { return nullptr; }
-
-char VMTLine::GetValueAt(long index) {
-    CheckPosition(index);
-    long array_index = (index - _zero) / SHIFT_STEP;
-    long inside_index = (index - _zero) % SHIFT_STEP;
-
-    return _array[array_index][inside_index];
-}
-
-char VMTLine::GetValueAtMachine() { return this->GetValueAt(_machine); }
-
-bool VMTLine::IsEqualAlphabit([[maybe_unused]] VMTAlphabit* alphabit) {
-    return false;
-}
-
-bool VMTLine::IsMachinePosition(long index) { return _machine == index; }
-
-std::shared_ptr<VMTUndoElement> VMTLine::SetMachinePosition(long index) {
-    _machine = index;
-    return std::shared_ptr<VMTUndoElement>();
-}
-
-void VMTLine::SetObserver([[maybe_unused]] IVMTLineObserver* observer) {}
-
-std::shared_ptr<VMTUndoElement> VMTLine::SetSignAtMachine(char sign) {
-    return SetValueAt(_machine, sign);
-}
-
-std::shared_ptr<VMTUndoElement> VMTLine::SetValueAt(long index, char sign) {
-    CheckPosition(index);
-    long array_index = (index - _zero) / SHIFT_STEP;
-    long inside_index = (index - _zero) % SHIFT_STEP;
-
-    _array[array_index][inside_index] = sign;
+    while (index >= array_.size()) {
+        array_.push_back(GetAlphabit()->GetLambda());
+    }
+    array_.at(index) = sign;
     return std::shared_ptr<VMTUndoElement>();
 }
 
 std::shared_ptr<VMTUndoElement> VMTLine::ShiftLeft() {
-    _machine--;
-    return std::shared_ptr<VMTUndoElement>();
-}
+    if (active_position_ == 0) {
+        throw std::out_of_range("Trying to go out of line's left border");
+    }
 
-std::shared_ptr<VMTUndoElement> VMTLine::ShiftLeftWord() {
-    do {
-        _machine--;
-    } while (GetValueAtMachine() != _alphabit->GetLambda());
-    return std::shared_ptr<VMTUndoElement>();
+    return SetActivePosition(active_position_ - 1);
 }
 
 std::shared_ptr<VMTUndoElement> VMTLine::ShiftRight() {
-    _machine++;
-    return std::shared_ptr<VMTUndoElement>();
-}
-
-std::shared_ptr<VMTUndoElement> VMTLine::ShiftRightWord() {
-    do {
-        _machine++;
-    } while (GetValueAtMachine() != _alphabit->GetLambda());
-    return std::shared_ptr<VMTUndoElement>();
+    while (active_position_ + 1 >= array_.size()) {
+        array_.push_back(alphabit_->GetLambda());
+    }
+    return SetActivePosition(active_position_ + 1);
 }
 
 void VMTLine::Clear() {
-    for (size_t i = 0; i < this->_array.size(); i++)
-        for (size_t j = 0; j < SHIFT_STEP; j++)
-            _array[i][j] = _alphabit->GetLambda();
+    array_.clear();
+    active_position_ = 0;
 }
 
-QString VMTLine::ToString() {
-    QString result;
-    for (size_t i = 0; i < this->_array.size(); i++)
-        for (size_t j = 0; j < SHIFT_STEP; j++)
-            result.append(QChar(_array[i][j]));
-
-    return result;
-}
+QString VMTLine::ToString() const { return QString{array_.data()}; }
 
 VMTLine::~VMTLine() {}

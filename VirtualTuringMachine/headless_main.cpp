@@ -33,14 +33,21 @@ class HeadlessEnvironment final : public IVMTEnvironment {
 };
 
 QString outputWord(const std::shared_ptr<VMTLine>& line) {
-    const long left = line->GetLeftSignPosition();
-    const long right = line->GetRightSignPosition();
-    if (left < 0 || right < left) return QString();
+    QChar labmda = line->GetAlphabit()->GetLambda();
+    QString line_raw = line->ToString();
+    if (line_raw.size() < 1) {
+        return "";
+    }
+    const long left = 0;
+    long right = line_raw.size() - 1;
+    while (right > left && line_raw[right] == labmda) {
+        --right;
+    }
 
     QString result;
     result.reserve(static_cast<int>(right - left + 1));
     for (long position = left; position <= right; ++position) {
-        result.append(QChar(line->GetValueAt(position)));
+        result.append(line->GetValueAt(position));
     }
     return result;
 }
@@ -89,7 +96,7 @@ bool run(const QString& path, const QString& machineName, const QString& input,
         debugger.GetLine()->SetValueAt(position + 1,
                                        input[position].toLatin1());
     }
-    debugger.GetLine()->SetMachinePosition(input.size() + 1);
+    debugger.GetLine()->SetActivePosition(input.size() + 1);
 
     HeadlessEnvironment environment;
     debugger.ToStart(&environment);
@@ -97,9 +104,9 @@ bool run(const QString& path, const QString& machineName, const QString& input,
     while (!debugger.IsFinish() && steps < maxSteps) {
         debugger.Step(&environment);
 
-        QTextStream(stderr) << debugger.GetLine()->GetMachinePosition() << " | "
+        QTextStream(stderr) << debugger.GetLine()->GetActivePosition() << " | "
                             << debugger.GetLine()->ToString() << Qt::endl;
-        if (debugger.GetLine()->GetMachinePosition() < 0) {
+        if (debugger.GetLine()->GetActivePosition() < 0) {
             error = QStringLiteral(
                 "Machine working cell out of left line border (< 0). Which is "
                 "forbidden");

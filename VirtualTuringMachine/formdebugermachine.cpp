@@ -136,7 +136,7 @@ void FormDebugerMachine::PrepareTest() {
             auto test = ex->GetTests().at(_current_test);
 
             for (QChar& ch : test.first) {
-                _debugger.GetLine()->SetSignAtMachine(ch.toLatin1());
+                _debugger.GetLine()->SetSignAtActivePosition(ch.toLatin1());
                 _debugger.GetLine()->ShiftRight();
             }
             RunTimer();
@@ -163,7 +163,8 @@ void FormDebugerMachine::CheckTest() {
 
             bool ok = true;
             for (QChar& ch : test.second) {
-                if (_debugger.GetLine()->GetValueAtMachine() != ch.toLatin1())
+                if (_debugger.GetLine()->GetValueAtActivePosition() !=
+                    ch.toLatin1())
                     ok = false;
                 _debugger.GetLine()->ShiftRight();
             }
@@ -213,10 +214,7 @@ void FormDebugerMachine::RunTimer() {
 
 void FormDebugerMachine::Stop() { _stop = true; }
 
-void FormDebugerMachine::Step() {
-    _debugger.Step(this);
-    ui->widget_line->Repaint();
-}
+void FormDebugerMachine::Step() { _debugger.Step(this); }
 
 void FormDebugerMachine::on_button_left_page_clicked() {
     ui->widget_line->LeftPage();
