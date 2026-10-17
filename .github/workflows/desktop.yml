@@ -74,7 +74,7 @@ jobs:
             -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOS_DEPLOYMENT_TARGET}"
 
       - name: Build
-        run: cmake --build build --config Release --parallel
+        run: cmake --build build --config Release --parallel 4
 
       - name: Deploy Qt frameworks
         id: app
@@ -210,7 +210,7 @@ jobs:
 
       - name: Build
         shell: pwsh
-        run: cmake --build build --config Release --target VTM --parallel
+        run: cmake --build build --config Release --target VTM --parallel 4
 
       - name: Locate and deploy VTM.exe
         id: exe
